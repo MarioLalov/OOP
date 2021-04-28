@@ -16,6 +16,7 @@ public:
     RGB getPixelRGB(std::size_t x, std::size_t y) const;
     int getPixelGrayscale(std::size_t x, std::size_t y) const;
     void setPixel(std::size_t x, std::size_t y, RGB value);
+    void createResized(std::size_t newWidth, std::size_t newHeight);
     void print();
     ~PBM();
 };

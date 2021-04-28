@@ -118,6 +118,93 @@ void PPM::setPixel(std::size_t x, std::size_t y, RGB value)
     }
 }
 
+void PPM::createResized(std::size_t newWidth, std::size_t newHeight)
+{
+
+    RGB **newPicture = nullptr;
+
+    //allocate
+    try
+    {
+        newPicture = new RGB *[newHeight];
+
+        for (int i = 0; i < newHeight; i++)
+        {
+            newPicture[i] = nullptr;
+        }
+
+        for (int i = 0; i < newHeight; i++)
+        {
+            newPicture[i] = new RGB[newWidth];
+
+            for (int k = 0; k < newWidth; k++)
+            {
+                newPicture[i][k] = new int[3];
+            }
+        }
+    }
+    catch (const std::bad_alloc &err)
+    {
+        if (newPicture != nullptr)
+        {
+            for (int i = 0; i < newHeight; i++)
+            {
+                if (newPicture[i])
+                {
+                    for (int k = 0; k < newWidth; k++)
+                    {
+                        if (newPicture[i][k] != nullptr)
+                        {
+                            delete[] newPicture[i][k];
+                        }
+                    }
+
+                    delete[] newPicture[i];
+                }
+            }
+
+            delete[] newPicture;
+        }
+
+        throw err;
+    }
+
+
+    //resize
+    for (int i = 0; i < newHeight; i++)
+    {
+        for (int j = 0; j < newWidth; j++)
+        {
+            std::size_t srcX = roundToInt((((double)j) / ((double)newWidth)) * ((double)width));
+            srcX = std::min(srcX, width-1);
+            std::size_t srcY = roundToInt((((double)i) / ((double)newHeight)) * ((double)height));
+            srcY = std::min(srcY, height-1);
+
+            RGB curValue = getPixelRGB(srcX, srcY);
+            newPicture[i][j][0] = curValue[0];
+            newPicture[i][j][1] = curValue[1];
+            newPicture[i][j][2] = curValue[2];
+        }
+    }
+
+
+    for (int i = 0; i < height; i++)
+    {
+        for(int j = 0; j < width; j++)
+        {
+            delete[] picture[i][j];
+        }
+
+        delete[] picture[i];
+    }
+
+    delete[] picture;
+
+    picture = newPicture;
+    height = newHeight;
+    width = newWidth;
+}
+
 PPM::~PPM()
 {
     for (int i = 0; i < height; i++)

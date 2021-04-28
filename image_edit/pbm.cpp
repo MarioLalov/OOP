@@ -1,4 +1,5 @@
 #include "pbm.h"
+#include <iostream>
 
 PBM::PBM(std::string in_format, std::ifstream &file, std::string in_output_location)
 {
@@ -84,12 +85,81 @@ RGB PBM::getPixelRGB(std::size_t x, std::size_t y) const
 
 int PBM::getPixelGrayscale(std::size_t x, std::size_t y) const
 {
+    if (x >= width || y >= height || x < 0 || y < 0)
+    {
+        throw std::out_of_range("Out of range!");
+    }
+
     return flipPixel(x, y);
 }
 
 void PBM::setPixel(std::size_t x, std::size_t y, RGB value)
 {
     picture[y][x] = RGBToGrayscale(value, 1);
+}
+
+void PBM::createResized(std::size_t newWidth, std::size_t newHeight)
+{
+
+    int **newPicture = nullptr;
+
+    //allocate
+    try
+    {
+        newPicture = new int *[newHeight];
+
+        for (int i = 0; i < newHeight; i++)
+        {
+            newPicture[i] = nullptr;
+        }
+
+        for (int i = 0; i < newHeight; i++)
+        {
+            newPicture[i] = new int[newWidth];
+        }
+    }
+    catch (const std::bad_alloc &err)
+    {
+        if (newPicture)
+        {
+            for (int i = 0; i < newHeight; i++)
+            {
+                if (newPicture[i])
+                {
+                    delete[] newPicture[i];
+                }
+            }
+
+            delete[] newPicture;
+        }
+
+        throw err;
+    }
+
+    //resize
+    for (int i = 0; i < newHeight; i++)
+    {
+        for (int j = 0; j < newWidth; j++)
+        {
+            std::size_t srcX = roundToInt((((double)j) / ((double)newWidth)) * ((double)width));
+            srcX = std::min(srcX, width-1);
+            std::size_t srcY = roundToInt((((double)i) / ((double)newHeight)) * ((double)height));
+            srcX = std::min(srcX, height-1);
+
+            newPicture[i][j] = !getPixelGrayscale(srcX, srcY);
+        }
+    }
+
+    for (int i = 0; i < height; i++)
+    {
+        delete[] picture[i];
+    }
+
+    delete[] picture;
+
+    picture = newPicture;
+    height = newHeight;
+    width = newWidth;
 }
 
 PBM::~PBM()

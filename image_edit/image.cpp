@@ -31,6 +31,7 @@ int Image::RGBToGrayscale(RGB rgb_value, int max_value)
     return (int)grayscale;
 }
 
+//TODO rework write function as virtual
 void Image::write(std::size_t x, std::size_t y, std::ofstream &file)
 {
     if (format == "P1")
@@ -127,19 +128,12 @@ void Image::resize(int widthInput, int heightInput, bool percentage)
     newWidth = (percentage) ? (widthInput/100)*width : widthInput;
     newHeight = (percentage) ? (heightInput/100)*height : heightInput;
 
-    //!!!TODO create new empty matrix using createNew(newparams) for each type 
+    createResized(newWidth, newHeight);
+}
 
-    RGB** newPic;
-    double pixelPercentage = ((double)newWidth)/100;
-    
-    for(std::size_t i = 0; i < height; i++)
-    {
-        for(std::size_t j =0; j < newWidth; j++)
-        {
-
-        }
-
-    }
+int roundToInt(double num)
+{
+    return (int)(num + 0.5);
 }
 // grayscale 17 = (17,17,17)
 // (0.3 * R) + (0.59 * G) + (0.11 * B) = 17

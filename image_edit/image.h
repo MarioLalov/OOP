@@ -25,10 +25,11 @@ public:
     virtual RGB getPixelRGB(std::size_t x, std::size_t y) const = 0;
     virtual int getPixelGrayscale(std::size_t x, std::size_t y) const = 0;
     virtual void setPixel(std::size_t x, std::size_t y, RGB value) = 0;
+    virtual void createResized(std::size_t newWidth, std::size_t newHeight) = 0;
     //virtual ~Image();
 };
 //helpers
-//int *getRGB(int value, int max);
+int roundToInt(double num);
 
 #endif
 
