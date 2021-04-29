@@ -18,6 +18,8 @@ protected:
     static RGB grayscaleToRGB(int value, int max_value);
     static int RGBToGrayscale(RGB, int max_value);
     void write(std::size_t x, std::size_t y, std::ofstream& file);
+    virtual void writePixel(std::size_t x, std::size_t y, std::ofstream& file) = 0;
+    virtual void writeFormatInfo(std::size_t curWidth, std::size_t curHeight, std::ofstream& file) = 0;
 
 public:
     void crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y);

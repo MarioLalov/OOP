@@ -17,6 +17,8 @@ public:
     int getPixelGrayscale(std::size_t x, std::size_t y) const;
     void setPixel(std::size_t x, std::size_t y, RGB value);
     void createResized(std::size_t newWidth, std::size_t newHeight);
+    void writePixel(std::size_t x, std::size_t y, std::ofstream& file);
+    void writeFormatInfo(std::size_t curWidth, std::size_t curHeight, std::ofstream& file);
     void print();
     ~PBM();
 };

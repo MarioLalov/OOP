@@ -155,6 +155,19 @@ void PGM::createResized(std::size_t newWidth, std::size_t newHeight)
     width = newWidth;
 }
 
+void PGM::writePixel(std::size_t x, std::size_t y, std::ofstream &file)
+{
+    file << getPixelGrayscale(y, x);
+}
+
+void PGM::writeFormatInfo(std::size_t curWidth, std::size_t curHeight, std::ofstream& file)
+{
+    file << format << std::endl;
+    file << curWidth << " " << curHeight << std::endl;
+    file << maxGrayscaleValue << std::endl;
+}
+
+
 PGM::~PGM()
 {
     for (int i = 0; i < height; i++)

@@ -142,9 +142,9 @@ void PBM::createResized(std::size_t newWidth, std::size_t newHeight)
         for (int j = 0; j < newWidth; j++)
         {
             std::size_t srcX = roundToInt((((double)j) / ((double)newWidth)) * ((double)width));
-            srcX = std::min(srcX, width-1);
+            srcX = std::min(srcX, width - 1);
             std::size_t srcY = roundToInt((((double)i) / ((double)newHeight)) * ((double)height));
-            srcX = std::min(srcX, height-1);
+            srcX = std::min(srcX, height - 1);
 
             newPicture[i][j] = !getPixelGrayscale(srcX, srcY);
         }
@@ -160,6 +160,17 @@ void PBM::createResized(std::size_t newWidth, std::size_t newHeight)
     picture = newPicture;
     height = newHeight;
     width = newWidth;
+}
+
+void PBM::writePixel(std::size_t x, std::size_t y, std::ofstream &file)
+{
+    file << !getPixelGrayscale(y, x);
+}
+
+void PBM::writeFormatInfo(std::size_t curWidth, std::size_t curHeight, std::ofstream& file)
+{
+    file << format << std::endl;
+    file << curWidth << " " << curHeight << std::endl;
 }
 
 PBM::~PBM()

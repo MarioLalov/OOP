@@ -169,16 +169,15 @@ void PPM::createResized(std::size_t newWidth, std::size_t newHeight)
         throw err;
     }
 
-
     //resize
     for (int i = 0; i < newHeight; i++)
     {
         for (int j = 0; j < newWidth; j++)
         {
             std::size_t srcX = roundToInt((((double)j) / ((double)newWidth)) * ((double)width));
-            srcX = std::min(srcX, width-1);
+            srcX = std::min(srcX, width - 1);
             std::size_t srcY = roundToInt((((double)i) / ((double)newHeight)) * ((double)height));
-            srcY = std::min(srcY, height-1);
+            srcY = std::min(srcY, height - 1);
 
             RGB curValue = getPixelRGB(srcX, srcY);
             newPicture[i][j][0] = curValue[0];
@@ -187,10 +186,9 @@ void PPM::createResized(std::size_t newWidth, std::size_t newHeight)
         }
     }
 
-
     for (int i = 0; i < height; i++)
     {
-        for(int j = 0; j < width; j++)
+        for (int j = 0; j < width; j++)
         {
             delete[] picture[i][j];
         }
@@ -203,6 +201,21 @@ void PPM::createResized(std::size_t newWidth, std::size_t newHeight)
     picture = newPicture;
     height = newHeight;
     width = newWidth;
+}
+
+void PPM::writePixel(std::size_t x, std::size_t y, std::ofstream &file)
+{
+    RGB value = getPixelRGB(y, x);
+    file << value[0] << " " << value[1] << " " << value[2] << std::endl;
+
+    delete[] value;
+}
+
+void PPM::writeFormatInfo(std::size_t curWidth, std::size_t curHeight, std::ofstream &file)
+{
+    file << format << std::endl;
+    file << curWidth << " " << curHeight << std::endl;
+    file << maxRGBValue << std::endl;
 }
 
 PPM::~PPM()

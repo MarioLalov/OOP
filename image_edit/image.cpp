@@ -32,7 +32,7 @@ int Image::RGBToGrayscale(RGB rgb_value, int max_value)
 }
 
 //TODO rework write function as virtual
-void Image::write(std::size_t x, std::size_t y, std::ofstream &file)
+/*void Image::write(std::size_t x, std::size_t y, std::ofstream &file)
 {
     if (format == "P1")
     {
@@ -49,65 +49,68 @@ void Image::write(std::size_t x, std::size_t y, std::ofstream &file)
 
         delete[] value;
     }
-}
+}*/
 
 void Image::crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)
 {
-    if(upper_x > lower_x || upper_y > lower_y)
+    if (upper_x > lower_x || upper_y > lower_y)
     {
         throw std::invalid_argument("Reversed coordinates!");
     }
 
-    if(upper_x >= width)
+    if (upper_x >= width)
     {
-        upper_x = width-1;
+        upper_x = width - 1;
     }
 
-    if(upper_x < 0)
+    if (upper_x < 0)
     {
         upper_x = 0;
     }
 
-    if(lower_x >= width)
+    if (lower_x >= width)
     {
-        lower_x = width-1;
+        lower_x = width - 1;
     }
 
-    if(lower_x < 0)
+    if (lower_x < 0)
     {
         lower_x = 0;
     }
 
-    if(upper_y >= height)
+    if (upper_y >= height)
     {
-        upper_y = height-1;
+        upper_y = height - 1;
     }
 
-    if(upper_y < 0)
+    if (upper_y < 0)
     {
         upper_y = 0;
     }
 
-    if(lower_y >= height)
+    if (lower_y >= height)
     {
-        lower_y = height-1;
+        lower_y = height - 1;
     }
 
-    if(lower_y < 0)
+    if (lower_y < 0)
     {
         lower_y = 0;
     }
 
     std::ofstream ofile(output_location);
 
-    ofile << format << std::endl;
-    ofile << (lower_x - upper_x + 1) << " " << (lower_y - upper_y + 1) << std::endl;
+    /*ofile << format << std::endl;
+    ofile << (lower_x - upper_x + 1) << " " << (lower_y - upper_y + 1) << std::endl;*/
+
+    writeFormatInfo((lower_x - upper_x + 1), (lower_y - upper_y + 1), ofile);
 
     for (int i = upper_y; i <= lower_y; i++)
     {
         for (int j = upper_x; j <= lower_x; j++)
         {
-            write(i, j, ofile);
+            //write(i, j, ofile);
+            writePixel(i, j, ofile);
         }
 
         if (format != "P3")
@@ -125,8 +128,8 @@ void Image::resize(int widthInput, int heightInput, bool percentage)
     std::size_t newWidth;
     std::size_t newHeight;
 
-    newWidth = (percentage) ? (widthInput/100)*width : widthInput;
-    newHeight = (percentage) ? (heightInput/100)*height : heightInput;
+    newWidth = (percentage) ? (widthInput / 100) * width : widthInput;
+    newHeight = (percentage) ? (heightInput / 100) * height : heightInput;
 
     createResized(newWidth, newHeight);
 }
