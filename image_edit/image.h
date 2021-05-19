@@ -5,7 +5,25 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-typedef int *RGB;
+struct RGB
+{
+    unsigned int red;
+    unsigned int green;
+    unsigned int blue;
+
+    RGB();
+    RGB(unsigned int in_red, unsigned int in_green, unsigned int in_blue);
+    RGB& operator=(const RGB& other)
+    {
+        red = other.red;
+        green = other.green;
+        blue = other.blue;
+
+        return *this;
+    }
+};
+
+//typedef int *RGB;
 
 class Image
 {
@@ -17,9 +35,8 @@ protected:
 
     static RGB grayscaleToRGB(int value, int max_value);
     static int RGBToGrayscale(RGB, int max_value);
-    void write(std::size_t x, std::size_t y, std::ofstream& file);
     virtual void writePixel(std::size_t x, std::size_t y, std::ofstream& file) = 0;
-    virtual void writeFormatInfo(std::size_t curWidth, std::size_t curHeight, std::ofstream& file) = 0;
+    virtual void writeFormatInfo(std::ofstream& file) = 0;
 
 public:
     void crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y);
@@ -27,7 +44,9 @@ public:
     virtual RGB getPixelRGB(std::size_t x, std::size_t y) const = 0;
     virtual int getPixelGrayscale(std::size_t x, std::size_t y) const = 0;
     virtual void setPixel(std::size_t x, std::size_t y, RGB value) = 0;
+    virtual void createCropped(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y) = 0;
     virtual void createResized(std::size_t newWidth, std::size_t newHeight) = 0;
+    void write();
     //virtual ~Image();
 };
 //helpers

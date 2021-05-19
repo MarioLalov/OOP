@@ -7,7 +7,7 @@
 
 int main()
 {
-    std::ifstream file("text2.pgm");
+    std::ifstream file("text3.ppm");
 
     char form[3];
 
@@ -18,13 +18,19 @@ int main()
     std::string format = form;
 
     //PBM pic(form, file, "text1.pbm");
-    PGM pic(form, file, "text1.pgm");
-    //PPM pic(form, file, "text4.ppm");
+    //PGM pic(form, file, "text1.pgm");
+    PPM pic(form, file, "text4.ppm");
 
-    pic.crop(0,0, 11, 6);
+    //pic.print();
+
+    std::cout << "--------------------------------" << std::endl;
+    
+    //pic.crop(0,0, 1, 1);
     //std::cout << pic.getPixelGrayscale(0, 6);
 
-    //pic.resize(10, 15, false);
+    pic.resize(15,15, false);
+
+    pic.write();
 
     //pic.print();
 

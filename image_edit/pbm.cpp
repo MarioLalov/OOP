@@ -1,6 +1,50 @@
 #include "pbm.h"
 #include <iostream>
 
+void PBM::deleteArr(int **arr, std::size_t curHeight)
+{
+    if (arr != nullptr)
+    {
+        for (int i = 0; i < curHeight; i++)
+        {
+            if (arr[i])
+            {
+                delete[] arr[i];
+            }
+        }
+
+        delete[] arr;
+    }
+}
+
+int **PBM::allocateNew(std::size_t curWidth, std::size_t curHeight)
+{
+    int **pic = nullptr;
+
+    try
+    {
+        pic = new int *[curHeight];
+
+        for (int i = 0; i < curHeight; i++)
+        {
+            pic[i] = nullptr;
+        }
+
+        for (int i = 0; i < curHeight; i++)
+        {
+            pic[i] = new int[curWidth];
+        }
+
+        return pic;
+    }
+    catch (const std::bad_alloc &err)
+    {
+        deleteArr(pic, curHeight);
+
+        throw err;
+    }
+}
+
 PBM::PBM(std::string in_format, std::ifstream &file, std::string in_output_location)
 {
     format = in_format;
@@ -14,37 +58,13 @@ PBM::PBM(std::string in_format, std::ifstream &file, std::string in_output_locat
     file >> width >> height;
 
     //allocate memory
-    picture = nullptr;
-
     try
     {
-        picture = new int *[height];
-
-        for (int i = 0; i < height; i++)
-        {
-            picture[i] = nullptr;
-        }
-
-        for (int i = 0; i < height; i++)
-        {
-            picture[i] = new int[width];
-        }
+        picture = allocateNew(width, height);
+        std::cout << "done";
     }
     catch (const std::bad_alloc &err)
     {
-        if (picture != nullptr)
-        {
-            for (int i = 0; i < height; i++)
-            {
-                if (picture[i])
-                {
-                    delete[] picture[i];
-                }
-            }
-
-            delete[] picture;
-        }
-
         throw err;
     }
 
@@ -101,38 +121,15 @@ void PBM::setPixel(std::size_t x, std::size_t y, RGB value)
 void PBM::createResized(std::size_t newWidth, std::size_t newHeight)
 {
 
+    //allocate
     int **newPicture = nullptr;
 
-    //allocate
     try
     {
-        newPicture = new int *[newHeight];
-
-        for (int i = 0; i < newHeight; i++)
-        {
-            newPicture[i] = nullptr;
-        }
-
-        for (int i = 0; i < newHeight; i++)
-        {
-            newPicture[i] = new int[newWidth];
-        }
+        newPicture = allocateNew(newWidth, newHeight);
     }
     catch (const std::bad_alloc &err)
     {
-        if (newPicture)
-        {
-            for (int i = 0; i < newHeight; i++)
-            {
-                if (newPicture[i])
-                {
-                    delete[] newPicture[i];
-                }
-            }
-
-            delete[] newPicture;
-        }
-
         throw err;
     }
 
@@ -150,37 +147,53 @@ void PBM::createResized(std::size_t newWidth, std::size_t newHeight)
         }
     }
 
-    for (int i = 0; i < height; i++)
-    {
-        delete[] picture[i];
-    }
-
-    delete[] picture;
+    deleteArr(picture, height);
 
     picture = newPicture;
     height = newHeight;
     width = newWidth;
 }
 
-void PBM::writePixel(std::size_t x, std::size_t y, std::ofstream &file)
+void PBM::createCropped(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)
 {
-    file << !getPixelGrayscale(y, x);
+    int **newPicture = nullptr;
+
+    try
+    {
+        newPicture = allocateNew((lower_x - upper_x + 1), (lower_y - upper_y + 1));
+    }
+    catch (const std::bad_alloc &err)
+    {
+        throw err;
+    }
+
+    for (int i = upper_y, k = 0; i <= lower_y; i++, k++)
+    {
+        for (int j = upper_x, l = 0; j <= lower_x; j++, l++)
+        {
+            newPicture[k][l] = picture[i][j];
+        }
+    }
+
+    deleteArr(picture, height);
+
+    picture = newPicture;
 }
 
-void PBM::writeFormatInfo(std::size_t curWidth, std::size_t curHeight, std::ofstream& file)
+void PBM::writePixel(std::size_t x, std::size_t y, std::ofstream &file)
+{
+    file << !getPixelGrayscale(y, x) << " ";
+}
+
+void PBM::writeFormatInfo(std::ofstream &file)
 {
     file << format << std::endl;
-    file << curWidth << " " << curHeight << std::endl;
+    file << width << " " << height << std::endl;
 }
 
 PBM::~PBM()
 {
-    for (int i = 0; i < height; i++)
-    {
+    deleteArr(picture, height);
 
-        delete[] picture[i];
-    }
-
-    delete[] picture;
     std::cout << "all clear";
 }
