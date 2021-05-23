@@ -13,17 +13,8 @@ struct RGB
 
     RGB();
     RGB(unsigned int in_red, unsigned int in_green, unsigned int in_blue);
-    RGB& operator=(const RGB& other)
-    {
-        red = other.red;
-        green = other.green;
-        blue = other.blue;
-
-        return *this;
-    }
+    RGB& operator=(const RGB& other);
 };
-
-//typedef int *RGB;
 
 class Image
 {
@@ -41,6 +32,8 @@ protected:
 public:
     void crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y);
     void resize(int widthInput, int heightInput, bool percentage);
+    std::size_t getWidth() const;
+    std::size_t getHeight() const;
     virtual RGB getPixelRGB(std::size_t x, std::size_t y) const = 0;
     virtual int getPixelGrayscale(std::size_t x, std::size_t y) const = 0;
     virtual void setPixel(std::size_t x, std::size_t y, RGB value) = 0;
@@ -50,6 +43,7 @@ public:
     //virtual ~Image();
 };
 //helpers
+void checkForComments(std::ifstream &file);
 int roundToInt(double num);
 
 #endif

@@ -1,6 +1,6 @@
 #ifndef PBM_H
 #define PBM_H
-#include "image.h"
+#include "../Image/image.h"
 
 class PBM : public Image
 {

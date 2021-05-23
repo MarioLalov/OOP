@@ -1,13 +1,13 @@
 #include <iostream>
 #include <fstream>
-#include "image.h"
-#include "pbm.h"
-#include "pgm.h"
-#include "ppm.h"
+#include "Image/image.h"
+#include "PBM/pbm.h"
+#include "PGM/pgm.h"
+#include "PPM/ppm.h"
 
 int main()
 {
-    std::ifstream file("text3.ppm");
+    std::ifstream file("Files/text3.ppm",  std::ios::binary);
 
     char form[3];
 
@@ -17,20 +17,20 @@ int main()
 
     std::string format = form;
 
-    //PBM pic(form, file, "text1.pbm");
-    //PGM pic(form, file, "text1.pgm");
-    PPM pic(form, file, "text4.ppm");
+    //PBM pic(form, file, "Files/text1.pbm");
+    //PGM pic(form, file, "Files/text1.pgm");
+    PPM pic(format, file, "Files/text3.ppm");
 
-    //pic.print();
+    pic.print();
 
     std::cout << "--------------------------------" << std::endl;
     
-    //pic.crop(0,0, 1, 1);
+    //pic.crop(0,0, 125, 125);
     //std::cout << pic.getPixelGrayscale(0, 6);
 
-    pic.resize(15,15, false);
+    //pic.resize(50,50, true);
 
-    pic.write();
+    //pic.write();
 
     //pic.print();
 

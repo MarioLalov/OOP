@@ -66,8 +66,25 @@ PPM::PPM(std::string in_format, std::ifstream &file, std::string in_output_locat
         throw std::invalid_argument("File problem occured!");
     }
 
+    std::streampos cur = file.tellg();
+    std::string comment;
+    //file >> comment;
+    //std::cout << cur << std::endl;
+    //std::streampos cur1 = file.tellg();
+    /*if (comment[0] == '#')
+    {
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    else
+    {
+        file.seekg(cur, std::ios::beg);
+    }*/
+
+    checkForComments(file);
     file >> width >> height;
+    checkForComments(file);
     file >> maxRGBValue;
+    checkForComments(file);
 
     //allocate memory
     try
@@ -85,7 +102,8 @@ PPM::PPM(std::string in_format, std::ifstream &file, std::string in_output_locat
         {
             ///for (int k = 0; k < 3; k++)
             //{
-                file >> picture[i][j].red >> picture[i][j].green >> picture[i][j].blue;
+            file >> picture[i][j].red >> picture[i][j].green >> picture[i][j].blue;
+            checkForComments(file);
             //}
         }
     }

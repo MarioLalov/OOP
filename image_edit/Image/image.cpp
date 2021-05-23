@@ -1,4 +1,6 @@
 #include "image.h"
+#include <limits>
+
 
 RGB::RGB()
 {
@@ -12,6 +14,15 @@ RGB::RGB(unsigned int in_red, unsigned int in_green, unsigned int in_blue)
     red = in_red;
     green = in_green;
     blue = in_blue;
+}
+
+RGB &RGB::operator=(const RGB &other)
+{
+    red = other.red;
+    green = other.green;
+    blue = other.blue;
+
+    return *this;
 }
 
 RGB Image::grayscaleToRGB(int value, int max_value)
@@ -60,6 +71,16 @@ void Image::write()
 
     ofile.close();
     std::cout << "out";
+}
+
+std::size_t Image::getWidth() const
+{
+    return width;
+}
+
+std::size_t Image::getHeight() const
+{
+    return height;
 }
 
 void Image::crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)
@@ -124,6 +145,28 @@ void Image::resize(int widthInput, int heightInput, bool percentage)
     newHeight = (percentage) ? roundToInt(((double)heightInput / 100) * ((double)height)) : heightInput;
 
     createResized(newWidth, newHeight);
+}
+
+void checkForComments(std::ifstream &file)
+{
+    std::streampos currentPos = file.tellg();
+
+    std::string comment;
+
+    while (true)
+    {
+        file >> comment;
+        if (comment[0] == '#')
+        {
+            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            currentPos = file.tellg();
+        }
+        else
+        {
+            file.seekg(currentPos, std::ios::beg);
+            break;
+        }
+    }
 }
 
 int roundToInt(double num)

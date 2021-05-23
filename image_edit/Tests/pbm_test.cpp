@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include "../pbm.h"
+#include "../PBM/pbm.h"
 #include <fstream>
 #include <string>
 
