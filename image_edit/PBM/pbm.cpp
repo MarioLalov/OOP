@@ -55,7 +55,9 @@ PBM::PBM(std::string in_format, std::ifstream &file, std::string in_output_locat
         throw std::invalid_argument("File problem occured!");
     }
 
+    checkForComments(file);
     file >> width >> height;
+    checkForComments(file);
 
     //allocate memory
     try
@@ -73,6 +75,7 @@ PBM::PBM(std::string in_format, std::ifstream &file, std::string in_output_locat
         for (int j = 0; j < width; j++)
         {
             file >> picture[i][j];
+            checkForComments(file);
         }
     }
 }
@@ -98,9 +101,9 @@ int PBM::flipPixel(std::size_t x, std::size_t y) const
     return !picture[y][x];
 }
 
-RGB PBM::getPixelRGB(std::size_t x, std::size_t y) const
+Rgb PBM::getPixelRgb(std::size_t x, std::size_t y) const
 {
-    return grayscaleToRGB(flipPixel(x, y), 1);
+    return grayscaleToRgb(flipPixel(x, y), 1);
 }
 
 int PBM::getPixelGrayscale(std::size_t x, std::size_t y) const
@@ -113,9 +116,9 @@ int PBM::getPixelGrayscale(std::size_t x, std::size_t y) const
     return flipPixel(x, y);
 }
 
-void PBM::setPixel(std::size_t x, std::size_t y, RGB value)
+void PBM::setPixel(std::size_t x, std::size_t y, Rgb value)
 {
-    picture[y][x] = RGBToGrayscale(value, 1);
+    picture[y][x] = RgbToGrayscale(value, 1);
 }
 
 void PBM::createResized(std::size_t newWidth, std::size_t newHeight)
@@ -152,6 +155,34 @@ void PBM::createResized(std::size_t newWidth, std::size_t newHeight)
     picture = newPicture;
     height = newHeight;
     width = newWidth;
+}
+
+void PBM::startEditing(std::size_t new_width, std::size_t new_height)
+{
+    if(editingPicture)
+    {
+        throw std::logic_error("Operation already started!");
+    }
+
+    editingPicture = allocateNew(new_width, new_height);
+}
+
+void PBM::endEditing()
+{
+    if(!editingPicture)
+    {
+        throw std::logic_error("Operation is not started!");
+    }
+
+    deleteArr(picture, height);
+    picture = editingPicture;
+
+    editingPicture = nullptr;
+}
+
+void PBM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY)
+{
+    editingPicture[destY][destX] = picture[srcY][srcX];
 }
 
 void PBM::createCropped(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)

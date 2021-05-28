@@ -1,22 +1,21 @@
 #include "image.h"
 #include <limits>
 
-
-RGB::RGB()
+Rgb::Rgb()
 {
     red = 0;
     green = 0;
     blue = 0;
 }
 
-RGB::RGB(unsigned int in_red, unsigned int in_green, unsigned int in_blue)
+Rgb::Rgb(unsigned int in_red, unsigned int in_green, unsigned int in_blue)
 {
     red = in_red;
     green = in_green;
     blue = in_blue;
 }
 
-RGB &RGB::operator=(const RGB &other)
+Rgb &Rgb::operator=(const Rgb &other)
 {
     red = other.red;
     green = other.green;
@@ -25,26 +24,26 @@ RGB &RGB::operator=(const RGB &other)
     return *this;
 }
 
-RGB Image::grayscaleToRGB(int value, int max_value)
+Rgb Image::grayscaleToRgb(int value, int max_value)
 {
-    RGB rgb_value;
+    Rgb Rgb_value;
     int to255 = value * (255 / max_value);
 
     /*for (int i = 0; i < 3; i++)
     {
-        rgb_value[i] = to255;
+        Rgb_value[i] = to255;
     }*/
-    rgb_value.red = to255;
-    rgb_value.green = to255;
-    rgb_value.blue = to255;
+    Rgb_value.red = to255;
+    Rgb_value.green = to255;
+    Rgb_value.blue = to255;
 
-    return rgb_value;
+    return Rgb_value;
 }
 
-int Image::RGBToGrayscale(RGB rgb_value, int max_value)
+int Image::RgbToGrayscale(Rgb Rgb_value, int max_value)
 {
-    //double grayscale = ((rgb_value[0] + rgb_value[1] + rgb_value[2]) / 3) * (max_value / 255);
-    double grayscale = ((rgb_value.red + rgb_value.green + rgb_value.blue) / 3) * (max_value / 255);
+    //double grayscale = ((Rgb_value[0] + Rgb_value[1] + Rgb_value[2]) / 3) * (max_value / 255);
+    double grayscale = ((Rgb_value.red + Rgb_value.green + Rgb_value.blue) / 3) * (max_value / 255);
     std::cout << grayscale;
 
     return (int)grayscale;
@@ -83,6 +82,7 @@ std::size_t Image::getHeight() const
     return height;
 }
 
+//template <class T>
 void Image::crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)
 {
     if (upper_x > lower_x || upper_y > lower_y)
@@ -130,10 +130,27 @@ void Image::crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, 
         lower_y = 0;
     }
 
-    createCropped(upper_x, upper_y, lower_x, lower_y);
+    //createCropped(upper_x, upper_y, lower_x, lower_y);
+    std::size_t newWidth = (lower_x - upper_x + 1);
+    std::size_t newHeight = (lower_y - upper_y + 1);
+    startEditing(newWidth, newHeight);
 
-    width = (lower_x - upper_x + 1);
-    height = (lower_y - upper_y + 1);
+    for (int i = upper_y, k = 0; i <= lower_y; i++, k++)
+    {
+        for (int j = upper_x, l = 0; j <= lower_x; j++, l++)
+        {
+            /*for (int p = 0; p < 3; p++)
+            {
+                newPicture[k][l][p] = picture[i][j][p];
+            }*/
+            copyToEditing(j, i, l, k);
+        }
+    }
+
+    endEditing();
+
+    width = newWidth;
+    height = newHeight;
 }
 
 void Image::resize(int widthInput, int heightInput, bool percentage)
@@ -144,7 +161,33 @@ void Image::resize(int widthInput, int heightInput, bool percentage)
     newWidth = (percentage) ? roundToInt(((double)widthInput / 100) * ((double)width)) : widthInput;
     newHeight = (percentage) ? roundToInt(((double)heightInput / 100) * ((double)height)) : heightInput;
 
-    createResized(newWidth, newHeight);
+    //createResized(newWidth, newHeight);
+    startEditing(newWidth, newHeight);
+
+    for (int i = 0; i < newHeight; i++)
+    {
+        for (int j = 0; j < newWidth; j++)
+        {
+            std::size_t srcX = roundToInt((((double)j) / ((double)newWidth)) * ((double)width));
+            srcX = std::min(srcX, width - 1);
+            std::size_t srcY = roundToInt((((double)i) / ((double)newHeight)) * ((double)height));
+            srcY = std::min(srcY, height - 1);
+
+            //Rgb curValue = getPixelRgb(srcX, srcY);
+            /*newPicture[i][j][0] = curValue[0];
+            newPicture[i][j][1] = curValue[1];
+            newPicture[i][j][2] = curValue[2];*/
+            //newPicture[i][j] = curValue;
+            copyToEditing(srcX, srcY, j, i);
+
+            //delete[] curValue;
+        }
+    }
+
+    endEditing();
+
+    width = newWidth;
+    height = newHeight;
 }
 
 void checkForComments(std::ifstream &file)
@@ -173,6 +216,387 @@ int roundToInt(double num)
 {
     return (int)(num + 0.5);
 }
+
+void Image::errorDiffusion()
+{
+    Rgb curValue;
+    int errorRed = 0;
+    int errorGreen = 0;
+    int errorBlue = 0;
+    Rgb pixel;
+
+    for (std::size_t y = 0; y < height; y++)
+    {
+        errorRed = 0;
+        errorGreen = 0;
+        errorBlue = 0;
+
+        for (std::size_t x = 0; x < width; x++)
+        {
+            curValue = getPixelRgb(x, y);
+            //std::cout << curValue.red << " " << curValue.green << " " << curValue.blue << std::endl;
+            //std::cout << errorRed << " " << errorGreen << " " << errorBlue << std::endl;
+
+            //red
+            if (curValue.red + errorRed < 0)
+            {
+                pixel.red = 0;
+            }
+            else if (curValue.red + errorRed > 255)
+            {
+                pixel.red = 255;
+            }
+            else
+            {
+                pixel.red = curValue.red + errorRed;
+            }
+
+            if ((255 - pixel.red) > pixel.red)
+            {
+                errorRed = pixel.red;
+                curValue.red = 0;
+            }
+            else
+            {
+                errorRed = pixel.red - 255;
+                curValue.red = 255;
+            }
+
+            //green
+            if (curValue.green + errorGreen < 0)
+            {
+                pixel.green = 0;
+            }
+            else if (curValue.green + errorGreen > 255)
+            {
+                pixel.green = 255;
+            }
+            else
+            {
+                pixel.green = curValue.green + errorGreen;
+            }
+
+            if ((255 - pixel.green) > pixel.green)
+            {
+                errorGreen = pixel.green;
+                curValue.green = 0;
+            }
+            else
+            {
+                errorGreen = pixel.green - 255;
+                curValue.green = 255;
+            }
+
+            //blue
+            if (curValue.blue + errorBlue < 0)
+            {
+                pixel.blue = 0;
+            }
+            else if (curValue.blue + errorBlue > 255)
+            {
+                pixel.blue = 255;
+            }
+            else
+            {
+                pixel.blue = curValue.blue + errorBlue;
+            }
+
+            if ((255 - pixel.blue) > pixel.blue)
+            {
+                errorBlue = pixel.blue;
+                curValue.blue = 0;
+            }
+            else
+            {
+                errorBlue = pixel.blue - 255;
+                curValue.blue = 255;
+            }
+
+            //std::cout << "new" << curValue.red << " " << curValue.green << " " << curValue.blue << std::endl;
+            setPixel(x, y, curValue);
+        }
+    }
+}
+
+void Image::twoDimErrorDiffusion()
+{
+    Rgb curValue;
+    int errorRed = 0;
+    int errorGreen = 0;
+    int errorBlue = 0;
+    Rgb pixel;
+
+    //create previous error row
+    int **rowError = new int *[width];
+    for (int i = 0; i < width; i++)
+    {
+        rowError[i] = new int[3];
+    }
+
+    for (std::size_t y = 0; y < height; y++)
+    {
+        errorRed = 0;
+        errorGreen = 0;
+        errorBlue = 0;
+
+        for (std::size_t x = 0; x < width; x++)
+        {
+            curValue = getPixelRgb(x, y);
+            //std::cout << curValue.red << " " << curValue.green << " " << curValue.blue << std::endl;
+            //std::cout << errorRed << " " << errorGreen << " " << errorBlue << std::endl;
+
+            //red
+            if (curValue.red + (errorRed + rowError[x][0]) / 2 < 0)
+            {
+                pixel.red = 0;
+            }
+            else if (curValue.red + (errorRed + rowError[x][0]) / 2 > 255)
+            {
+                pixel.red = 255;
+            }
+            else
+            {
+                pixel.red = curValue.red + (errorRed + rowError[x][0]) / 2;
+            }
+
+            if ((255 - pixel.red) > pixel.red)
+            {
+                errorRed = pixel.red;
+                rowError[x][0] = pixel.red;
+                curValue.red = 0;
+            }
+            else
+            {
+                errorRed = pixel.red - 255;
+                rowError[x][0] = pixel.red - 255;
+                curValue.red = 255;
+            }
+
+            //green
+            if (curValue.green + (errorGreen + rowError[x][1]) / 2 < 0)
+            {
+                pixel.green = 0;
+            }
+            else if (curValue.green + (errorGreen + rowError[x][1]) / 2 > 255)
+            {
+                pixel.green = 255;
+            }
+            else
+            {
+                pixel.green = curValue.green + (errorGreen + rowError[x][1]) / 2;
+            }
+
+            if ((255 - pixel.green) > pixel.green)
+            {
+                errorGreen = pixel.green;
+                rowError[x][1] = pixel.green;
+                curValue.green = 0;
+            }
+            else
+            {
+                errorGreen = pixel.green - 255;
+                rowError[x][1] = pixel.green - 255;
+                curValue.green = 255;
+            }
+
+            //blue
+            if (curValue.blue + (errorBlue + rowError[x][2]) / 2 < 0)
+            {
+                pixel.blue = 0;
+            }
+            else if (curValue.blue + (errorBlue + rowError[x][2]) / 2 > 255)
+            {
+                pixel.blue = 255;
+            }
+            else
+            {
+                pixel.blue = curValue.blue + (errorBlue + rowError[x][2]) / 2;
+            }
+
+            if ((255 - pixel.blue) > pixel.blue)
+            {
+                errorBlue = pixel.blue;
+                rowError[x][2] = pixel.blue;
+                curValue.blue = 0;
+            }
+            else
+            {
+                errorBlue = pixel.blue - 255;
+                rowError[x][2] = pixel.blue - 255;
+                curValue.blue = 255;
+            }
+
+            //std::cout << "new" << curValue.red << " " << curValue.green << " " << curValue.blue << std::endl;
+            setPixel(x, y, curValue);
+        }
+    }
+
+    for (int i = 0; i < width; i++)
+    {
+        delete[] rowError[i];
+    }
+
+    delete[] rowError;
+}
+
+void Image::floydDithering()
+{
+    Rgb curValue;
+    int errorRed, errorGreen, errorBlue;
+
+    for (std::size_t y = 0; y < height; y++)
+    {
+        errorRed = 0;
+        errorGreen = 0;
+        errorBlue = 0;
+
+        for (std::size_t x = 0; x < width; x++)
+        {
+            curValue = getPixelRgb(x, y);
+            //std::cout << curValue.red << " " << curValue.green << " " << curValue.blue << std::endl;
+            //std::cout << errorRed << " " << errorGreen << " " << errorBlue << std::endl;
+
+            //red
+            if ((255 - curValue.red) > curValue.red)
+            {
+                errorRed = curValue.red;
+                curValue.red = 0;
+            }
+            else
+            {
+                errorRed = curValue.red - 255;
+                curValue.red = 255;
+            }
+
+            //green
+            if ((255 - curValue.green) > curValue.green)
+            {
+                errorGreen = curValue.green;
+                curValue.green = 0;
+            }
+            else
+            {
+                errorGreen = curValue.green - 255;
+                curValue.green = 255;
+            }
+
+            //blue
+            if ((255 - curValue.blue) > curValue.blue)
+            {
+                errorBlue = curValue.blue;
+                curValue.blue = 0;
+            }
+            else
+            {
+                errorBlue = curValue.blue - 255;
+                curValue.blue = 255;
+            }
+
+            setPixel(x, y, curValue);
+
+            Rgb neighbour;
+
+            //spread error
+            if (y + 1 < height)
+            {
+
+                neighbour = getPixelRgb(x, y + 1);
+                curValue.red = neighbour.red + 5 * errorRed / 16;
+                if (curValue.red < 0)
+                    curValue.red = 0;
+                if (curValue.red > 255)
+                    curValue.red = 255;
+
+                curValue.green = neighbour.green + 5 * errorGreen / 16;
+                if (curValue.green < 0)
+                    curValue.green = 0;
+                if (curValue.green > 255)
+                    curValue.green = 255;
+
+                curValue.blue = neighbour.blue + 5 * errorBlue / 16;
+                if (curValue.blue < 0)
+                    curValue.blue = 0;
+                if (curValue.blue > 255)
+                    curValue.blue = 255;
+
+                setPixel(x, y + 1, curValue);
+
+                if (x + 1 < width)
+                {
+                    neighbour = getPixelRgb(x + 1, y + 1);
+                    curValue.red = neighbour.red + errorRed / 16;
+                    if (curValue.red < 0)
+                        curValue.red = 0;
+                    if (curValue.red > 255)
+                        curValue.red = 255;
+
+                    curValue.green = neighbour.green + errorGreen / 16;
+                    if (curValue.green < 0)
+                        curValue.green = 0;
+                    if (curValue.green > 255)
+                        curValue.green = 255;
+
+                    curValue.blue = neighbour.blue + errorBlue / 16;
+                    if (curValue.blue < 0)
+                        curValue.blue = 0;
+                    if (curValue.blue > 255)
+                        curValue.blue = 255;
+
+                    setPixel(x + 1, y + 1, curValue);
+                }
+
+                if (x - 1 >= 0)
+                {
+                    neighbour = getPixelRgb(x - 1, y + 1);
+                    curValue.red = neighbour.red + 3 * errorRed / 16;
+                    if (curValue.red < 0)
+                        curValue.red = 0;
+                    if (curValue.red > 255)
+                        curValue.red = 255;
+
+                    curValue.green = neighbour.green + 3 * errorGreen / 16;
+                    if (curValue.green < 0)
+                        curValue.green = 0;
+                    if (curValue.green > 255)
+                        curValue.green = 255;
+
+                    curValue.blue = neighbour.blue + 3 * errorBlue / 16;
+                    if (curValue.blue < 0)
+                        curValue.blue = 0;
+                    if (curValue.blue > 255)
+                        curValue.blue = 255;
+
+                    setPixel(x - 1, y + 1, curValue);
+                }
+            }
+
+            if (x + 1 < width)
+            {
+                neighbour = getPixelRgb(x + 1, y);
+                curValue.red = neighbour.red + 7 * errorRed / 16;
+                if (curValue.red < 0)
+                    curValue.red = 0;
+                if (curValue.red > 255)
+                    curValue.red = 255;
+
+                curValue.green = neighbour.green + 7 * errorGreen / 16;
+                if (curValue.green < 0)
+                    curValue.green = 0;
+                if (curValue.green > 255)
+                    curValue.green = 255;
+
+                curValue.blue = neighbour.blue + 7 * errorBlue / 16;
+                if (curValue.blue < 0)
+                    curValue.blue = 0;
+                if (curValue.blue > 255)
+                    curValue.blue = 255;
+
+                setPixel(x + 1, y, curValue);
+            }
+        }
+    }
+}
+
 // grayscale 17 = (17,17,17)
 // (0.3 * R) + (0.59 * G) + (0.11 * B) = 17
 // 17 + 17 + 17  <=>  0.3*

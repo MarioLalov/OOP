@@ -54,8 +54,11 @@ PGM::PGM(std::string in_format, std::ifstream &file, std::string in_output_locat
         throw std::invalid_argument("File problem occured!");
     }
 
+    checkForComments(file);
     file >> width >> height;
+    checkForComments(file);
     file >> maxGrayscaleValue;
+    checkForComments(file);
 
     //allocate memory
     try
@@ -72,6 +75,7 @@ PGM::PGM(std::string in_format, std::ifstream &file, std::string in_output_locat
         for (int j = 0; j < width; j++)
         {
             file >> picture[i][j];
+            checkForComments(file);
         }
     }
 }
@@ -93,9 +97,9 @@ void PGM::print()
     }
 }
 
-RGB PGM::getPixelRGB(std::size_t x, std::size_t y) const
+Rgb PGM::getPixelRgb(std::size_t x, std::size_t y) const
 {
-    return grayscaleToRGB(picture[y][x], maxGrayscaleValue);
+    return grayscaleToRgb(picture[y][x], maxGrayscaleValue);
 }
 
 int PGM::getPixelGrayscale(std::size_t x, std::size_t y) const
@@ -103,9 +107,37 @@ int PGM::getPixelGrayscale(std::size_t x, std::size_t y) const
     return picture[y][x];
 }
 
-void PGM::setPixel(std::size_t x, std::size_t y, RGB value)
+void PGM::setPixel(std::size_t x, std::size_t y, Rgb value)
 {
-    picture[y][x] = RGBToGrayscale(value, maxGrayscaleValue);
+    picture[y][x] = RgbToGrayscale(value, maxGrayscaleValue);
+}
+
+void PGM::startEditing(std::size_t new_width, std::size_t new_height)
+{
+    if(editingPicture)
+    {
+        throw std::logic_error("Operation already started!");
+    }
+
+    editingPicture = allocateNew(new_width, new_height);
+}
+
+void PGM::endEditing()
+{
+    if(!editingPicture)
+    {
+        throw std::logic_error("Operation is not started!");
+    }
+
+    deleteArr(picture, height);
+    picture = editingPicture;
+
+    editingPicture = nullptr;
+}
+
+void PGM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY)
+{
+    editingPicture[destY][destX] = picture[srcY][srcX];
 }
 
 void PGM::createResized(std::size_t newWidth, std::size_t newHeight)

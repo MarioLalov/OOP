@@ -1,6 +1,6 @@
 #include "ppm.h"
 
-void PPM::deleteArr(RGB **arr, std::size_t curHeight, std::size_t curWidth)
+void PPM::deleteArr(Rgb **arr, std::size_t curHeight, std::size_t curWidth)
 {
     if (arr != nullptr)
     {
@@ -24,12 +24,12 @@ void PPM::deleteArr(RGB **arr, std::size_t curHeight, std::size_t curWidth)
     }
 }
 
-RGB **PPM::allocateNew(std::size_t curWidth, std::size_t curHeight)
+Rgb **PPM::allocateNew(std::size_t curWidth, std::size_t curHeight)
 {
-    RGB **pic = nullptr;
+    Rgb **pic = nullptr;
     try
     {
-        pic = new RGB *[curHeight];
+        pic = new Rgb *[curHeight];
 
         for (int i = 0; i < curHeight; i++)
         {
@@ -38,7 +38,7 @@ RGB **PPM::allocateNew(std::size_t curWidth, std::size_t curHeight)
 
         for (int i = 0; i < curHeight; i++)
         {
-            pic[i] = new RGB[curWidth];
+            pic[i] = new Rgb[curWidth];
 
             /*for (int k = 0; k < curWidth; k++)
             {
@@ -66,24 +66,10 @@ PPM::PPM(std::string in_format, std::ifstream &file, std::string in_output_locat
         throw std::invalid_argument("File problem occured!");
     }
 
-    std::streampos cur = file.tellg();
-    std::string comment;
-    //file >> comment;
-    //std::cout << cur << std::endl;
-    //std::streampos cur1 = file.tellg();
-    /*if (comment[0] == '#')
-    {
-        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-    else
-    {
-        file.seekg(cur, std::ios::beg);
-    }*/
-
     checkForComments(file);
     file >> width >> height;
     checkForComments(file);
-    file >> maxRGBValue;
+    file >> maxRgbValue;
     checkForComments(file);
 
     //allocate memory
@@ -100,11 +86,8 @@ PPM::PPM(std::string in_format, std::ifstream &file, std::string in_output_locat
     {
         for (int j = 0; j < width; j++)
         {
-            ///for (int k = 0; k < 3; k++)
-            //{
             file >> picture[i][j].red >> picture[i][j].green >> picture[i][j].blue;
             checkForComments(file);
-            //}
         }
     }
 }
@@ -113,16 +96,12 @@ void PPM::print()
 {
     std::cout << format << std::endl;
     std::cout << width << " " << height << std::endl;
-    std::cout << maxRGBValue << std::endl;
+    std::cout << maxRgbValue << std::endl;
 
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
         {
-            /*for (int k = 0; k < 3; k++)
-            {
-                std::cout << picture[i][j][k] << " ";
-            }*/
             std::cout << picture[i][j].red << " " << picture[i][j].green << " " << picture[i][j].blue << " ";
 
             std::cout << " | ";
@@ -137,19 +116,19 @@ int PPM::getPixelGrayscale(std::size_t x, std::size_t y) const
     return (picture[y][x].red + picture[y][x].green + picture[y][x].blue) / 3;
 }
 
-RGB PPM::getPixelRGB(std::size_t x, std::size_t y) const
+Rgb PPM::getPixelRgb(std::size_t x, std::size_t y) const
 {
-    /*RGB to255 = new int[3];
+    /*Rgb to255 = new int[3];
     for (int i = 0; i < 3; i++)
     {
-        to255[i] = picture[y][x][i] * (255 / maxRGBValue);
+        to255[i] = picture[y][x][i] * (255 / maxRgbValue);
     }*/
-    RGB to255(picture[y][x].red, picture[y][x].green, picture[y][x].blue);
+    Rgb to255(picture[y][x].red, picture[y][x].green, picture[y][x].blue);
 
     return to255;
 }
 
-void PPM::setPixel(std::size_t x, std::size_t y, RGB value)
+void PPM::setPixel(std::size_t x, std::size_t y, Rgb value)
 {
     /*for (int i = 0; i < 3; i++)
     {
@@ -158,10 +137,38 @@ void PPM::setPixel(std::size_t x, std::size_t y, RGB value)
     picture[y][x] = value;
 }
 
-void PPM::createResized(std::size_t newWidth, std::size_t newHeight)
+void PPM::startEditing(std::size_t new_width, std::size_t new_height)
+{
+    if(editingPicture)
+    {
+        throw std::logic_error("Operation already started!");
+    }
+
+    editingPicture = allocateNew(new_width, new_height);
+}
+
+void PPM::endEditing()
+{
+    if(!editingPicture)
+    {
+        throw std::logic_error("Operation is not started!");
+    }
+
+    deleteArr(picture, height, width);
+    picture = editingPicture;
+
+    editingPicture = nullptr;
+}
+
+void PPM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY)
+{
+    editingPicture[destY][destX] = picture[srcY][srcX];
+}
+
+/*void PPM::createResized(std::size_t newWidth, std::size_t newHeight)
 {
     //allocate
-    RGB **newPicture = nullptr;
+    Rgb **newPicture = nullptr;
 
     try
     {
@@ -182,10 +189,10 @@ void PPM::createResized(std::size_t newWidth, std::size_t newHeight)
             std::size_t srcY = roundToInt((((double)i) / ((double)newHeight)) * ((double)height));
             srcY = std::min(srcY, height - 1);
 
-            RGB curValue = getPixelRGB(srcX, srcY);
-            /*newPicture[i][j][0] = curValue[0];
+            Rgb curValue = getPixelRgb(srcX, srcY);
+            newPicture[i][j][0] = curValue[0];
             newPicture[i][j][1] = curValue[1];
-            newPicture[i][j][2] = curValue[2];*/
+            newPicture[i][j][2] = curValue[2];
             newPicture[i][j] = curValue;
 
             //delete[] curValue;
@@ -197,11 +204,11 @@ void PPM::createResized(std::size_t newWidth, std::size_t newHeight)
     picture = newPicture;
     height = newHeight;
     width = newWidth;
-}
+}*/
 
-void PPM::createCropped(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)
+/*void PPM::createCropped(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)
 {
-    RGB **newPicture = nullptr;
+    Rgb **newPicture = nullptr;
 
     try
     {
@@ -216,10 +223,6 @@ void PPM::createCropped(std::size_t upper_x, std::size_t upper_y, std::size_t lo
     {
         for (int j = upper_x, l = 0; j <= lower_x; j++, l++)
         {
-            /*for (int p = 0; p < 3; p++)
-            {
-                newPicture[k][l][p] = picture[i][j][p];
-            }*/
             newPicture[k][l] = picture[i][j];
         }
     }
@@ -227,11 +230,11 @@ void PPM::createCropped(std::size_t upper_x, std::size_t upper_y, std::size_t lo
     deleteArr(picture, height, width);
 
     picture = newPicture;
-}
+}*/
 
 void PPM::writePixel(std::size_t x, std::size_t y, std::ofstream &file)
 {
-    RGB value = getPixelRGB(y, x);
+    Rgb value = getPixelRgb(y, x);
     file << value.red << " " << value.green << " " << value.blue << std::endl;
 
     //delete[] value;
@@ -241,7 +244,7 @@ void PPM::writeFormatInfo(std::ofstream &file)
 {
     file << format << std::endl;
     file << width << " " << height << std::endl;
-    file << maxRGBValue << std::endl;
+    file << maxRgbValue << std::endl;
 }
 
 PPM::~PPM()

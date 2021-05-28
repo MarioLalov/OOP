@@ -7,32 +7,37 @@
 
 int main()
 {
-    std::ifstream file("Files/text3.ppm",  std::ios::binary);
+    std::ifstream file("Files/TestImg.ppm",  std::ios::binary);
 
     char form[3];
 
-    file >> form[0] >> form[1];
-    form[2] = '\0';
+    //file >> form[0] >> form[1];
+    //form[2] = '\0';
     //file.getline(form, 3);
 
-    std::string format = form;
+    std::string format; //= form;
+    file >> format;
 
     //PBM pic(form, file, "Files/text1.pbm");
     //PGM pic(form, file, "Files/text1.pgm");
-    PPM pic(format, file, "Files/text3.ppm");
+    PPM pic(format, file, "Files/text7.ppm");
 
-    pic.print();
+    //pic.print();
 
     std::cout << "--------------------------------" << std::endl;
     
-    //pic.crop(0,0, 125, 125);
+    //pic.crop(130,120, 180, 170);
     //std::cout << pic.getPixelGrayscale(0, 6);
 
-    //pic.resize(50,50, true);
+    //pic.resize(600,600, true);
 
-    //pic.write();
+    //pic.errorDiffusion();
+    //pic.twoDimErrorDiffusion();
+    pic.floydDithering();
+    pic.write();
 
     //pic.print();
+
 
     file.close();
 
