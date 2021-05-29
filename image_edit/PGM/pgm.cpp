@@ -99,6 +99,11 @@ void PGM::print()
 
 Rgb PGM::getPixelRgb(std::size_t x, std::size_t y) const
 {
+    if(x >= width || y >= height || x < 0 || y < 0)
+    {
+        throw std::out_of_range("Out of range");
+    }
+
     return grayscaleToRgb(picture[y][x], maxGrayscaleValue);
 }
 
@@ -112,7 +117,7 @@ void PGM::setPixel(std::size_t x, std::size_t y, Rgb value)
     picture[y][x] = RgbToGrayscale(value, maxGrayscaleValue);
 }
 
-void PGM::startEditing(std::size_t new_width, std::size_t new_height)
+void PGM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
 {
     if(editingPicture)
     {
@@ -122,7 +127,7 @@ void PGM::startEditing(std::size_t new_width, std::size_t new_height)
     editingPicture = allocateNew(new_width, new_height);
 }
 
-void PGM::endEditing()
+void PGM::endDimensionEditing()
 {
     if(!editingPicture)
     {

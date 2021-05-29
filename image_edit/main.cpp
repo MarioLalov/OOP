@@ -7,7 +7,7 @@
 
 int main()
 {
-    std::ifstream file("Files/TestImg.ppm",  std::ios::binary);
+    std::ifstream file("Files/text2.pgm", std::ios::binary);
 
     char form[3];
 
@@ -17,15 +17,16 @@ int main()
 
     std::string format; //= form;
     file >> format;
+    std::cout << format;
 
-    //PBM pic(form, file, "Files/text1.pbm");
-    //PGM pic(form, file, "Files/text1.pgm");
-    PPM pic(format, file, "Files/text7.ppm");
+    //PBM pic(format, file, "Files/text1.pbm");
+    PGM pic(format, file, "Files/textDith.pgm");
+    //PPM pic(format, file, "Files/text8.ppm");
 
     //pic.print();
 
     std::cout << "--------------------------------" << std::endl;
-    
+
     //pic.crop(130,120, 180, 170);
     //std::cout << pic.getPixelGrayscale(0, 6);
 
@@ -33,11 +34,19 @@ int main()
 
     //pic.errorDiffusion();
     //pic.twoDimErrorDiffusion();
-    pic.floydDithering();
-    pic.write();
-
+    //pic.floydDithering();
+    //pic.jarvisDithering();
+    //pic.stuckiDithering();
+    //pic.atkinsonDithering();
+    //pic.burkesDithering();
+    //pic.sierraDithering();
+    //pic.twoRowSierra();
+    //pic.sierraLite();
     //pic.print();
 
+    //pic.write();
+
+//    pic.print();
 
     file.close();
 

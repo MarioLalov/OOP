@@ -8,7 +8,7 @@ Rgb::Rgb()
     blue = 0;
 }
 
-Rgb::Rgb(unsigned int in_red, unsigned int in_green, unsigned int in_blue)
+Rgb::Rgb(int in_red, int in_green, int in_blue)
 {
     red = in_red;
     green = in_green;
@@ -24,10 +24,71 @@ Rgb &Rgb::operator=(const Rgb &other)
     return *this;
 }
 
-Rgb Image::grayscaleToRgb(int value, int max_value)
+Rgb Rgb::operator+(Rgb const &other)
+{
+    Rgb sum;
+
+    if (red + other.red > 255)
+        sum.red = 255;
+    else if (red + other.red < 0)
+        sum.red = 0;
+    else
+        sum.red = red + other.red;
+
+    if (green + other.green > 255)
+        sum.green = 255;
+    else if (green + other.green < 0)
+        sum.green = 0;
+    else
+        sum.green = green + other.green;
+
+    if (blue + other.blue > 255)
+        sum.blue = 255;
+    else if (blue + other.blue < 0)
+        sum.blue = 0;
+    else
+        sum.blue = blue + other.blue;
+
+    return sum;
+}
+
+Rgb Rgb::operator*(int const &num)
+{
+    Rgb result;
+
+    if (red * num > 255)
+        result.red = 255;
+    else
+        result.red = red * num;
+
+    if (green * num > 255)
+        result.green = 255;
+    else
+        result.green = green * num;
+
+    if (blue * num > 255)
+        result.blue = 255;
+    else
+        result.blue = blue * num;
+
+    return result;
+}
+
+Rgb Rgb::operator/(int const &num)
+{
+    Rgb result;
+    result.red = red / num;
+    result.green = green / num;
+    result.blue = blue / num;
+
+    return result;
+}
+
+Rgb grayscaleToRgb(int value, int max_value)
 {
     Rgb Rgb_value;
     int to255 = value * (255 / max_value);
+    //int to255 = value*(max_value/255);
 
     /*for (int i = 0; i < 3; i++)
     {
@@ -40,13 +101,16 @@ Rgb Image::grayscaleToRgb(int value, int max_value)
     return Rgb_value;
 }
 
-int Image::RgbToGrayscale(Rgb Rgb_value, int max_value)
+int RgbToGrayscale(Rgb Rgb_value, int max_value)
 {
     //double grayscale = ((Rgb_value[0] + Rgb_value[1] + Rgb_value[2]) / 3) * (max_value / 255);
-    double grayscale = ((Rgb_value.red + Rgb_value.green + Rgb_value.blue) / 3) * (max_value / 255);
-    std::cout << grayscale;
+    //double grayscale = ((Rgb_value.red + Rgb_value.green + Rgb_value.blue) / 3) * (max_value / 255);
+    int grayscale = (Rgb_value.green*max_value)/255;
 
-    return (int)grayscale;
+    //std::cout << Rgb_value.red << ": ";
+    //std::cout << grayscale << " ";
+
+    return grayscale;
 }
 
 void Image::write()
@@ -130,24 +194,19 @@ void Image::crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, 
         lower_y = 0;
     }
 
-    //createCropped(upper_x, upper_y, lower_x, lower_y);
     std::size_t newWidth = (lower_x - upper_x + 1);
     std::size_t newHeight = (lower_y - upper_y + 1);
-    startEditing(newWidth, newHeight);
+    startDimensionEditing(newWidth, newHeight);
 
     for (int i = upper_y, k = 0; i <= lower_y; i++, k++)
     {
         for (int j = upper_x, l = 0; j <= lower_x; j++, l++)
         {
-            /*for (int p = 0; p < 3; p++)
-            {
-                newPicture[k][l][p] = picture[i][j][p];
-            }*/
             copyToEditing(j, i, l, k);
         }
     }
 
-    endEditing();
+    endDimensionEditing();
 
     width = newWidth;
     height = newHeight;
@@ -162,7 +221,7 @@ void Image::resize(int widthInput, int heightInput, bool percentage)
     newHeight = (percentage) ? roundToInt(((double)heightInput / 100) * ((double)height)) : heightInput;
 
     //createResized(newWidth, newHeight);
-    startEditing(newWidth, newHeight);
+    startDimensionEditing(newWidth, newHeight);
 
     for (int i = 0; i < newHeight; i++)
     {
@@ -184,7 +243,7 @@ void Image::resize(int widthInput, int heightInput, bool percentage)
         }
     }
 
-    endEditing();
+    endDimensionEditing();
 
     width = newWidth;
     height = newHeight;
@@ -217,19 +276,31 @@ int roundToInt(double num)
     return (int)(num + 0.5);
 }
 
+void assignNewValues(int value, int &destValue, int &errorValue)
+{
+    if ((255 - value) > value)
+    {
+        errorValue = value;
+        destValue = 0;
+    }
+    else
+    {
+        errorValue = value - 255;
+        destValue = 255;
+    }
+}
+
 void Image::errorDiffusion()
 {
     Rgb curValue;
-    int errorRed = 0;
+    /*int errorRed = 0;
     int errorGreen = 0;
-    int errorBlue = 0;
+    int errorBlue = 0;*/
     Rgb pixel;
 
     for (std::size_t y = 0; y < height; y++)
     {
-        errorRed = 0;
-        errorGreen = 0;
-        errorBlue = 0;
+        Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < width; x++)
         {
@@ -238,7 +309,7 @@ void Image::errorDiffusion()
             //std::cout << errorRed << " " << errorGreen << " " << errorBlue << std::endl;
 
             //red
-            if (curValue.red + errorRed < 0)
+            /*if (curValue.red + errorRed < 0)
             {
                 pixel.red = 0;
             }
@@ -253,17 +324,22 @@ void Image::errorDiffusion()
 
             if ((255 - pixel.red) > pixel.red)
             {
-                errorRed = pixel.red;
+                error.red = pixel.red;
                 curValue.red = 0;
             }
             else
             {
-                errorRed = pixel.red - 255;
+                error.red = pixel.red - 255;
                 curValue.red = 255;
-            }
+            }*/
+
+            pixel = curValue + error;
+            assignNewValues(pixel.red, curValue.red, error.red);
+            assignNewValues(pixel.green, curValue.green, error.green);
+            assignNewValues(pixel.blue, curValue.blue, error.blue);
 
             //green
-            if (curValue.green + errorGreen < 0)
+            /*if (curValue.green + errorGreen < 0)
             {
                 pixel.green = 0;
             }
@@ -310,7 +386,7 @@ void Image::errorDiffusion()
             {
                 errorBlue = pixel.blue - 255;
                 curValue.blue = 255;
-            }
+            }*/
 
             //std::cout << "new" << curValue.red << " " << curValue.green << " " << curValue.blue << std::endl;
             setPixel(x, y, curValue);
@@ -327,26 +403,73 @@ void Image::twoDimErrorDiffusion()
     Rgb pixel;
 
     //create previous error row
-    int **rowError = new int *[width];
+    Rgb *rowError = new Rgb[width];
+    /*int **rowError = new int *[width];
     for (int i = 0; i < width; i++)
     {
         rowError[i] = new int[3];
-    }
+    }*/
 
     for (std::size_t y = 0; y < height; y++)
     {
-        errorRed = 0;
-        errorGreen = 0;
-        errorBlue = 0;
+        Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < width; x++)
         {
             curValue = getPixelRgb(x, y);
             //std::cout << curValue.red << " " << curValue.green << " " << curValue.blue << std::endl;
             //std::cout << errorRed << " " << errorGreen << " " << errorBlue << std::endl;
+            pixel = curValue + error + rowError[x] / 2;
 
+            assignNewValues(pixel.red, curValue.red, error.red);
+            assignNewValues(pixel.red, curValue.red, rowError[x].red);
+            assignNewValues(pixel.green, curValue.green, error.green);
+            assignNewValues(pixel.green, curValue.green, rowError[x].green);
+            assignNewValues(pixel.blue, curValue.blue, error.blue);
+            assignNewValues(pixel.blue, curValue.blue, rowError[x].red);
             //red
-            if (curValue.red + (errorRed + rowError[x][0]) / 2 < 0)
+            /*if ((255 - pixel.red) > pixel.red)
+            {
+                error.red = pixel.red;
+                rowError[x].red = pixel.red;
+                curValue.red = 0;
+            }
+            else
+            {
+                error.red = pixel.red - 255;
+                rowError[x].red = pixel.red - 255;
+                curValue.red = 255;
+            }
+
+            //green
+            if ((255 - pixel.green) > pixel.green)
+            {
+                error.green = pixel.green;
+                rowError[x].green = pixel.green;
+                curValue.green = 0;
+            }
+            else
+            {
+                error.green = pixel.green - 255;
+                rowError[x].green = pixel.green - 255;
+                curValue.green = 255;
+            }
+
+            //blue
+            if ((255 - pixel.blue) > pixel.blue)
+            {
+                error.blue = pixel.blue;
+                rowError[x].blue = pixel.blue;
+                curValue.blue = 0;
+            }
+            else
+            {
+                error.blue = pixel.blue - 255;
+                rowError[x].blue = pixel.blue - 255;
+                curValue.blue = 255;
+            }*/
+
+            /*if (curValue.red + (errorRed + rowError[x][0]) / 2 < 0)
             {
                 pixel.red = 0;
             }
@@ -424,17 +547,17 @@ void Image::twoDimErrorDiffusion()
                 errorBlue = pixel.blue - 255;
                 rowError[x][2] = pixel.blue - 255;
                 curValue.blue = 255;
-            }
+            }*/
 
             //std::cout << "new" << curValue.red << " " << curValue.green << " " << curValue.blue << std::endl;
             setPixel(x, y, curValue);
         }
     }
 
-    for (int i = 0; i < width; i++)
+    /*for (int i = 0; i < width; i++)
     {
         delete[] rowError[i];
-    }
+    }*/
 
     delete[] rowError;
 }
@@ -442,13 +565,11 @@ void Image::twoDimErrorDiffusion()
 void Image::floydDithering()
 {
     Rgb curValue;
-    int errorRed, errorGreen, errorBlue;
+    //int errorRed, errorGreen, errorBlue;
 
     for (std::size_t y = 0; y < height; y++)
     {
-        errorRed = 0;
-        errorGreen = 0;
-        errorBlue = 0;
+        Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < width; x++)
         {
@@ -456,7 +577,11 @@ void Image::floydDithering()
             //std::cout << curValue.red << " " << curValue.green << " " << curValue.blue << std::endl;
             //std::cout << errorRed << " " << errorGreen << " " << errorBlue << std::endl;
 
-            //red
+            assignNewValues(curValue.red, curValue.red, error.red);
+            assignNewValues(curValue.green, curValue.green, error.green);
+            assignNewValues(curValue.blue, curValue.blue, error.blue);
+
+            /*//red
             if ((255 - curValue.red) > curValue.red)
             {
                 errorRed = curValue.red;
@@ -490,7 +615,7 @@ void Image::floydDithering()
             {
                 errorBlue = curValue.blue - 255;
                 curValue.blue = 255;
-            }
+            }*/
 
             setPixel(x, y, curValue);
 
@@ -501,7 +626,7 @@ void Image::floydDithering()
             {
 
                 neighbour = getPixelRgb(x, y + 1);
-                curValue.red = neighbour.red + 5 * errorRed / 16;
+                /*curValue.red = neighbour.red + 5 * errorRed / 16;
                 if (curValue.red < 0)
                     curValue.red = 0;
                 if (curValue.red > 255)
@@ -517,14 +642,15 @@ void Image::floydDithering()
                 if (curValue.blue < 0)
                     curValue.blue = 0;
                 if (curValue.blue > 255)
-                    curValue.blue = 255;
+                    curValue.blue = 255;*/
+                curValue = neighbour + ((error / 16) * 5);
 
                 setPixel(x, y + 1, curValue);
 
                 if (x + 1 < width)
                 {
                     neighbour = getPixelRgb(x + 1, y + 1);
-                    curValue.red = neighbour.red + errorRed / 16;
+                    /*curValue.red = neighbour.red + errorRed / 16;
                     if (curValue.red < 0)
                         curValue.red = 0;
                     if (curValue.red > 255)
@@ -540,7 +666,9 @@ void Image::floydDithering()
                     if (curValue.blue < 0)
                         curValue.blue = 0;
                     if (curValue.blue > 255)
-                        curValue.blue = 255;
+                        curValue.blue = 255;*/
+
+                    curValue = neighbour + (error / 16);
 
                     setPixel(x + 1, y + 1, curValue);
                 }
@@ -548,7 +676,7 @@ void Image::floydDithering()
                 if (x - 1 >= 0)
                 {
                     neighbour = getPixelRgb(x - 1, y + 1);
-                    curValue.red = neighbour.red + 3 * errorRed / 16;
+                    /*curValue.red = neighbour.red + 3 * errorRed / 16;
                     if (curValue.red < 0)
                         curValue.red = 0;
                     if (curValue.red > 255)
@@ -564,7 +692,9 @@ void Image::floydDithering()
                     if (curValue.blue < 0)
                         curValue.blue = 0;
                     if (curValue.blue > 255)
-                        curValue.blue = 255;
+                        curValue.blue = 255;*/
+
+                    curValue = neighbour + ((error / 16) * 3);
 
                     setPixel(x - 1, y + 1, curValue);
                 }
@@ -573,7 +703,7 @@ void Image::floydDithering()
             if (x + 1 < width)
             {
                 neighbour = getPixelRgb(x + 1, y);
-                curValue.red = neighbour.red + 7 * errorRed / 16;
+                /*curValue.red = neighbour.red + 7 * errorRed / 16;
                 if (curValue.red < 0)
                     curValue.red = 0;
                 if (curValue.red > 255)
@@ -589,7 +719,9 @@ void Image::floydDithering()
                 if (curValue.blue < 0)
                     curValue.blue = 0;
                 if (curValue.blue > 255)
-                    curValue.blue = 255;
+                    curValue.blue = 255;*/
+
+                curValue = neighbour + ((error / 16) * 7);
 
                 setPixel(x + 1, y, curValue);
             }
@@ -597,6 +729,786 @@ void Image::floydDithering()
     }
 }
 
+void Image::jarvisDithering()
+{
+    Rgb curValue;
+
+    for (std::size_t y = 0; y < height; y++)
+    {
+        Rgb error(0, 0, 0);
+
+        for (std::size_t x = 0; x < width; x++)
+        {
+            curValue = getPixelRgb(x, y);
+            assignNewValues(curValue.red, curValue.red, error.red);
+            assignNewValues(curValue.green, curValue.green, error.green);
+            assignNewValues(curValue.blue, curValue.blue, error.blue);
+
+            setPixel(x, y, curValue);
+
+            Rgb neighbour;
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y);
+                curValue = neighbour + ((error / 48) * 7);
+                setPixel(x + 1, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y);
+                curValue = neighbour + ((error / 48) * 5);
+                setPixel(x + 2, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 2, y + 1);
+                curValue = neighbour + ((error / 48) * 3);
+                setPixel(x - 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 1, y + 1);
+                curValue = neighbour + ((error / 48) * 5);
+                setPixel(x - 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 1);
+                curValue = neighbour + ((error / 48) * 7);
+                setPixel(x, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y + 1);
+                curValue = neighbour + ((error / 48) * 5);
+                setPixel(x + 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y + 1);
+                curValue = neighbour + ((error / 48) * 3);
+                setPixel(x + 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 2, y + 2);
+                curValue = neighbour + (error / 48);
+                setPixel(x - 2, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 1, y + 2);
+                curValue = neighbour + ((error / 48) * 3);
+                setPixel(x - 1, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 2);
+                curValue = neighbour + ((error / 48) * 5);
+                setPixel(x, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y + 2);
+                curValue = neighbour + ((error / 48) * 3);
+                setPixel(x + 1, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y + 2);
+                curValue = neighbour + (error / 48);
+                setPixel(x + 2, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+        }
+    }
+}
+
+void Image::stuckiDithering()
+{
+    Rgb curValue;
+
+    for (std::size_t y = 0; y < height; y++)
+    {
+        Rgb error(0, 0, 0);
+
+        for (std::size_t x = 0; x < width; x++)
+        {
+            curValue = getPixelRgb(x, y);
+            assignNewValues(curValue.red, curValue.red, error.red);
+            assignNewValues(curValue.green, curValue.green, error.green);
+            assignNewValues(curValue.blue, curValue.blue, error.blue);
+
+            setPixel(x, y, curValue);
+
+            Rgb neighbour;
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y);
+                curValue = neighbour + ((error / 42) * 8);
+                setPixel(x + 1, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y);
+                curValue = neighbour + ((error / 42) * 4);
+                setPixel(x + 2, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 2, y + 1);
+                curValue = neighbour + ((error / 42) * 2);
+                setPixel(x - 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 1, y + 1);
+                curValue = neighbour + ((error / 42) * 4);
+                setPixel(x - 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 1);
+                curValue = neighbour + ((error / 42) * 8);
+                setPixel(x, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y + 1);
+                curValue = neighbour + ((error / 42) * 4);
+                setPixel(x + 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y + 1);
+                curValue = neighbour + ((error / 42) * 2);
+                setPixel(x + 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 2, y + 2);
+                curValue = neighbour + (error / 42);
+                setPixel(x - 2, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 1, y + 2);
+                curValue = neighbour + ((error / 42) * 2);
+                setPixel(x - 1, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 2);
+                curValue = neighbour + ((error / 42) * 4);
+                setPixel(x, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y + 2);
+                curValue = neighbour + ((error / 42) * 2);
+                setPixel(x + 1, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y + 2);
+                curValue = neighbour + (error / 42);
+                setPixel(x + 2, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+        }
+    }
+}
+
+void Image::atkinsonDithering()
+{
+    Rgb curValue;
+
+    for (std::size_t y = 0; y < height; y++)
+    {
+        Rgb error(0, 0, 0);
+
+        for (std::size_t x = 0; x < width; x++)
+        {
+            curValue = getPixelRgb(x, y);
+            assignNewValues(curValue.red, curValue.red, error.red);
+            assignNewValues(curValue.green, curValue.green, error.green);
+            assignNewValues(curValue.blue, curValue.blue, error.blue);
+
+            setPixel(x, y, curValue);
+
+            Rgb neighbour;
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y);
+                curValue = neighbour + (error / 8);
+                setPixel(x + 1, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y);
+                curValue = neighbour + (error / 8);
+                setPixel(x + 2, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 1, y + 1);
+                curValue = neighbour + (error / 8);
+                setPixel(x - 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 1);
+                curValue = neighbour + (error / 8);
+                setPixel(x, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y + 1);
+                curValue = neighbour + (error / 8);
+                setPixel(x + 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 2);
+                curValue = neighbour + (error / 8);
+                setPixel(x, y + 2, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+        }
+    }
+}
+
+void Image::burkesDithering()
+{
+    Rgb curValue;
+
+    for (std::size_t y = 0; y < height; y++)
+    {
+        Rgb error(0, 0, 0);
+
+        for (std::size_t x = 0; x < width; x++)
+        {
+            curValue = getPixelRgb(x, y);
+            assignNewValues(curValue.red, curValue.red, error.red);
+            assignNewValues(curValue.green, curValue.green, error.green);
+            assignNewValues(curValue.blue, curValue.blue, error.blue);
+
+            setPixel(x, y, curValue);
+
+            Rgb neighbour;
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y);
+                curValue = neighbour + ((error / 32) * 8);
+                setPixel(x + 1, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y);
+                curValue = neighbour + ((error / 32) * 4);
+                setPixel(x + 2, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 2, y + 1);
+                curValue = neighbour + ((error / 32) * 2);
+                setPixel(x - 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 1, y + 1);
+                curValue = neighbour + ((error / 32) * 4);
+                setPixel(x - 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 1);
+                curValue = neighbour + ((error / 32) * 8);
+                setPixel(x, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y + 1);
+                curValue = neighbour + ((error / 32) * 4);
+                setPixel(x + 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y + 1);
+                curValue = neighbour + ((error / 32) * 2);
+                setPixel(x + 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+        }
+    }
+}
+
+void Image::sierraDithering()
+{
+    Rgb curValue;
+
+    for (std::size_t y = 0; y < height; y++)
+    {
+        Rgb error(0, 0, 0);
+
+        for (std::size_t x = 0; x < width; x++)
+        {
+            curValue = getPixelRgb(x, y);
+            assignNewValues(curValue.red, curValue.red, error.red);
+            assignNewValues(curValue.green, curValue.green, error.green);
+            assignNewValues(curValue.blue, curValue.blue, error.blue);
+
+            setPixel(x, y, curValue);
+
+            Rgb neighbour;
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y);
+                curValue = neighbour + ((error / 32) * 5);
+                setPixel(x + 1, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y);
+                curValue = neighbour + ((error / 32) * 3);
+                setPixel(x + 2, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 2, y + 1);
+                curValue = neighbour + ((error / 32) * 2);
+                setPixel(x - 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 1, y + 1);
+                curValue = neighbour + ((error / 32) * 4);
+                setPixel(x - 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 1);
+                curValue = neighbour + ((error / 32) * 5);
+                setPixel(x, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y + 1);
+                curValue = neighbour + ((error / 32) * 4);
+                setPixel(x + 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y + 1);
+                curValue = neighbour + ((error / 32) * 2);
+                setPixel(x + 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 1, y + 2);
+                curValue = neighbour + ((error / 32) * 2);
+                setPixel(x + 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 2);
+                curValue = neighbour + ((error / 32) * 3);
+                setPixel(x + 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y + 2);
+                curValue = neighbour + ((error / 32) * 2);
+                setPixel(x + 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+        }
+    }
+}
+
+void Image::twoRowSierra()
+{
+    Rgb curValue;
+
+    for (std::size_t y = 0; y < height; y++)
+    {
+        Rgb error(0, 0, 0);
+
+        for (std::size_t x = 0; x < width; x++)
+        {
+            curValue = getPixelRgb(x, y);
+            assignNewValues(curValue.red, curValue.red, error.red);
+            assignNewValues(curValue.green, curValue.green, error.green);
+            assignNewValues(curValue.blue, curValue.blue, error.blue);
+
+            setPixel(x, y, curValue);
+
+            Rgb neighbour;
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y);
+                curValue = neighbour + ((error / 16) * 4);
+                setPixel(x + 1, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y);
+                curValue = neighbour + ((error / 16) * 3);
+                setPixel(x + 2, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 2, y + 1);
+                curValue = neighbour + (error / 16);
+                setPixel(x - 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 1, y + 1);
+                curValue = neighbour + ((error / 16) * 2);
+                setPixel(x - 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 1);
+                curValue = neighbour + ((error / 16) * 3);
+                setPixel(x, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y + 1);
+                curValue = neighbour + ((error / 16) * 2);
+                setPixel(x + 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x + 2, y + 1);
+                curValue = neighbour + (error / 16);
+                setPixel(x + 2, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+        }
+    }
+}
+
+void Image::sierraLite()
+{
+    Rgb curValue;
+
+    for (std::size_t y = 0; y < height; y++)
+    {
+        Rgb error(0, 0, 0);
+
+        for (std::size_t x = 0; x < width; x++)
+        {
+            curValue = getPixelRgb(x, y);
+            assignNewValues(curValue.red, curValue.red, error.red);
+            assignNewValues(curValue.green, curValue.green, error.green);
+            assignNewValues(curValue.blue, curValue.blue, error.blue);
+
+            setPixel(x, y, curValue);
+
+            Rgb neighbour;
+
+            try
+            {
+                neighbour = getPixelRgb(x + 1, y);
+                curValue = neighbour + ((error / 4) * 2);
+                setPixel(x + 1, y, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x - 1, y + 1);
+                curValue = neighbour + (error / 4);
+                setPixel(x - 1, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+
+            try
+            {
+                neighbour = getPixelRgb(x, y + 1);
+                curValue = neighbour + (error / 4);
+                setPixel(x, y + 1, curValue);
+            }
+            catch (std::out_of_range)
+            {
+                neighbour = Rgb(0, 0, 0);
+            }
+        }
+    }
+}
 // grayscale 17 = (17,17,17)
 // (0.3 * R) + (0.59 * G) + (0.11 * B) = 17
 // 17 + 17 + 17  <=>  0.3*

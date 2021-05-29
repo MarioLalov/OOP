@@ -7,14 +7,16 @@
 
 struct Rgb
 {
-    unsigned int red;
-    unsigned int green;
-    unsigned int blue;
+    int red;
+    int green;
+    int blue;
 
     Rgb();
-    Rgb(unsigned int in_red, unsigned int in_green, unsigned int in_blue);
-    Rgb& operator=(const Rgb& other);
-    
+    Rgb(int in_red, int in_green, int in_blue);
+    Rgb &operator=(const Rgb &other);
+    Rgb operator+(Rgb const &other);
+    Rgb operator*(int const &num);
+    Rgb operator/(int const &num);
 };
 
 //template<class T>
@@ -26,14 +28,11 @@ protected:
     std::size_t width;
     std::size_t height;
 
-    static Rgb grayscaleToRgb(int value, int max_value);
-    static int RgbToGrayscale(Rgb, int max_value);
-
-    virtual void writePixel(std::size_t x, std::size_t y, std::ofstream& file) = 0;
-    virtual void writeFormatInfo(std::ofstream& file) = 0;
-    virtual void startEditing(std::size_t widht, std::size_t height) = 0;
+    virtual void writePixel(std::size_t x, std::size_t y, std::ofstream &file) = 0;
+    virtual void writeFormatInfo(std::ofstream &file) = 0;
+    virtual void startDimensionEditing(std::size_t widht, std::size_t height) = 0;
     virtual void copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY) = 0;
-    virtual void endEditing() = 0;
+    virtual void endDimensionEditing() = 0;
 
 public:
     void crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y);
@@ -41,7 +40,7 @@ public:
     std::size_t getWidth() const;
     std::size_t getHeight() const;
     virtual Rgb getPixelRgb(std::size_t x, std::size_t y) const = 0;
-    virtual int getPixelGrayscale(std::size_t x, std::size_t y) const = 0;
+    //virtual int getPixelGrayscale(std::size_t x, std::size_t y) const = 0;
     virtual void setPixel(std::size_t x, std::size_t y, Rgb value) = 0;
     //virtual void createCropped(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y) = 0;
     //virtual void createResized(std::size_t newWidth, std::size_t newHeight) = 0;
@@ -49,11 +48,20 @@ public:
     void errorDiffusion();
     void twoDimErrorDiffusion();
     void floydDithering();
+    void jarvisDithering();
+    void stuckiDithering();
+    void atkinsonDithering();
+    void burkesDithering();
+    void sierraDithering();
+    void twoRowSierra();
+    void sierraLite();
     //virtual ~Image();
 };
 //helpers
 void checkForComments(std::ifstream &file);
 int roundToInt(double num);
+Rgb grayscaleToRgb(int value, int max_value);
+int RgbToGrayscale(Rgb, int max_value);
 
 #endif
 

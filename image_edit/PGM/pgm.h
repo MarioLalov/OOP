@@ -11,8 +11,8 @@ private:
 
     int** allocateNew(std::size_t widht, std::size_t height);
     void deleteArr(int** arr, std::size_t curHeight);
-    void startEditing(std::size_t new_width, std::size_t new_height);
-    void endEditing();
+    void startDimensionEditing(std::size_t new_width, std::size_t new_height);
+    void endDimensionEditing();
 
 public:
     PGM(std::string in_format, std::ifstream &file, std::string output_location);

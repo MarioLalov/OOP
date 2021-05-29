@@ -6,14 +6,14 @@ class PBM : public Image
 {
 private:
     int **picture;
-    int **editingPicture;
+    int **editingPicture = nullptr;
 
     //needed because with PBM grayscale values are flipped
     int flipPixel(std::size_t x, std::size_t y) const;
     int **allocateNew(std::size_t widht, std::size_t height);
     void deleteArr(int **arr, std::size_t curHeight);
-    void startEditing(std::size_t new_width, std::size_t new_height);
-    void endEditing();
+    void startDimensionEditing(std::size_t new_width, std::size_t new_height);
+    void endDimensionEditing();
 
 public:
     PBM(std::string in_format, std::ifstream &file, std::string output_location);

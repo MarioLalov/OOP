@@ -1,0 +1,8 @@
+Image tests:
+g++ Image/image.cpp Tests/image_test.cpp
+
+PBM tests:
+g++ Image/image.cpp PBM/pbm.cpp Tests/pbm_test.cpp 
+
+PPM tests:
+g++ Image/image.cpp PPM/ppm.cpp Tests/ppm_test.cpp 

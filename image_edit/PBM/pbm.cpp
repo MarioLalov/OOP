@@ -157,7 +157,7 @@ void PBM::createResized(std::size_t newWidth, std::size_t newHeight)
     width = newWidth;
 }
 
-void PBM::startEditing(std::size_t new_width, std::size_t new_height)
+void PBM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
 {
     if(editingPicture)
     {
@@ -167,7 +167,7 @@ void PBM::startEditing(std::size_t new_width, std::size_t new_height)
     editingPicture = allocateNew(new_width, new_height);
 }
 
-void PBM::endEditing()
+void PBM::endDimensionEditing()
 {
     if(!editingPicture)
     {
