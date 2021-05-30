@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "../PPM/ppm.h"
+#include "../Editor/image_editor.h"
 #include <fstream>
 #include <string>
 
@@ -10,7 +11,7 @@ TEST_CASE("regular files")
     std::string format;
     file >> format;
 
-    PPM pic(format, file, "C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testPPM.ppm");
+    PPM pic(format, file);
 
     REQUIRE(pic.getWidth() == 3);
     REQUIRE(pic.getHeight() == 2);
@@ -24,7 +25,7 @@ TEST_CASE("files with comments")
     std::string format;
     file >> format;
 
-    PPM pic(format, file, "C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testCommentPPM.ppm");
+    PPM pic(format, file);
 
     REQUIRE(pic.getWidth() == 3);
     REQUIRE(pic.getHeight() == 2);
@@ -37,52 +38,59 @@ TEST_CASE("crop")
     std::string format;
     file >> format;
 
-    PPM pic(format, file, "C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testCommentPPM.ppm");
+    PPM* pic = new PPM(format, file);
 
     SECTION("angel of picture crop")
     {
-        pic.crop(0, 1, 1, 2);
+        //pic.crop(0, 1, 1, 2);
+        ImageEditor::crop(pic, 0, 1, 1, 2);
 
-        REQUIRE(pic.getHeight() == 2);
-        REQUIRE(pic.getWidth() == 2);
-        REQUIRE(pic.getPixelRgb(0,0).red == 5);
+        REQUIRE(pic->getHeight() == 2);
+        REQUIRE(pic->getWidth() == 2);
+        REQUIRE(pic->getPixelRgb(0,0).red == 5);
     }
 
     SECTION("mid picture crop")
     {
-        pic.crop(1, 1, 2, 2);
+        //pic.crop(1, 1, 2, 2);
+        ImageEditor::crop(pic, 1, 1, 2, 2);
 
-        REQUIRE(pic.getHeight() == 2);
-        REQUIRE(pic.getWidth() == 2);
-        REQUIRE(pic.getPixelRgb(0,1).red == 10);
+        REQUIRE(pic->getHeight() == 2);
+        REQUIRE(pic->getWidth() == 2);
+        REQUIRE(pic->getPixelRgb(0,1).red == 10);
     }
 
     SECTION("out of bound crop")
     {
-        pic.crop(1,1, 5, 6);
+        //pic.crop(1,1, 5, 6);
+        ImageEditor::crop(pic, 1, 1, 5, 6);
 
-        REQUIRE(pic.getHeight() == 3);
-        REQUIRE(pic.getWidth() == 3);
-        REQUIRE(pic.getPixelRgb(0,1).red == 10);
+        REQUIRE(pic->getHeight() == 3);
+        REQUIRE(pic->getWidth() == 3);
+        REQUIRE(pic->getPixelRgb(0,1).red == 10);
     }
 
     SECTION("out of bound crop with x out of range parameter")
     {
-        pic.crop(1,1, 5, 3);
+        //pic.crop(1,1, 5, 3);
+        ImageEditor::crop(pic, 1, 1, 5, 3);
 
-        REQUIRE(pic.getHeight() == 3);
-        REQUIRE(pic.getWidth() == 3);
-        REQUIRE(pic.getPixelRgb(0,1).red == 10);
+        REQUIRE(pic->getHeight() == 3);
+        REQUIRE(pic->getWidth() == 3);
+        REQUIRE(pic->getPixelRgb(0,1).red == 10);
     }
 
     SECTION("out of bound crop with y out of range parameter")
     {
-        pic.crop(1,1, 3, 6);
+        //pic.crop(1,1, 3, 6);
+        ImageEditor::crop(pic, 1, 1, 3, 6);
 
-        REQUIRE(pic.getHeight() == 3);
-        REQUIRE(pic.getWidth() == 3);
-        REQUIRE(pic.getPixelRgb(0,1).red == 10);
+        REQUIRE(pic->getHeight() == 3);
+        REQUIRE(pic->getWidth() == 3);
+        REQUIRE(pic->getPixelRgb(0,1).red == 10);
     }
+
+    delete pic;
 }
 
 TEST_CASE("resize")
@@ -91,22 +99,25 @@ TEST_CASE("resize")
     std::string format;
     file >> format;
 
-    PPM pic(format, file, "C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testCommentPPM.ppm");
+    PPM* pic = new PPM(format, file);
 
     SECTION("pixel resize")
     {
-        pic.resize(13, 17, false);
+        //pic.resize(13, 17, false);
+        ImageEditor::resize(pic, 13, 17, false);
 
-        REQUIRE(pic.getHeight() == 17);
-        REQUIRE(pic.getWidth() == 13);
+        REQUIRE(pic->getHeight() == 17);
+        REQUIRE(pic->getWidth() == 13);
     }
 
     SECTION("percentage resize")
     {
-        pic.resize(200, 200, true);
+        //pic.resize(200, 200, true);
+        ImageEditor::resize(pic, 200, 200, true);
 
-        REQUIRE(pic.getHeight() == 8);
-        REQUIRE(pic.getWidth() == 8);
+        REQUIRE(pic->getHeight() == 8);
+        REQUIRE(pic->getWidth() == 8);
     }
 
+    delete pic;
 }

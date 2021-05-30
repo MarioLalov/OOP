@@ -2,7 +2,13 @@ Image tests:
 g++ Image/image.cpp Tests/image_test.cpp
 
 PBM tests:
-g++ Image/image.cpp PBM/pbm.cpp Tests/pbm_test.cpp 
+g++ Image/image.cpp PBM/pbm.cpp Tests/pbm_test.cpp Editor/image_editor.cpp
+
+PGM tests:
+g++ Image/image.cpp PGM/pgm.cpp Tests/pgm_test.cpp Editor/image_editor.cpp
 
 PPM tests:
-g++ Image/image.cpp PPM/ppm.cpp Tests/ppm_test.cpp 
+g++ Image/image.cpp PPM/ppm.cpp Tests/ppm_test.cpp Editor/image_editor.cpp
+
+Full compilation:
+g++ Image/image.cpp PPM/ppm.cpp Editor/image_editor.cpp main.cpp

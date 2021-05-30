@@ -44,11 +44,10 @@ Rgb **PPM::allocateNew(std::size_t curWidth, std::size_t curHeight)
     }
 }
 
-PPM::PPM(std::string in_format, std::ifstream &file, std::string in_output_location)
+PPM::PPM(std::string in_format, std::ifstream &file)
 {
     format = in_format;
-    output_location = in_output_location;
-
+    
     if (!file.is_open())
     {
         throw std::invalid_argument("File problem occured!");
@@ -131,7 +130,7 @@ void PPM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
     editingPicture = allocateNew(new_width, new_height);
 }
 
-void PPM::endDimensionEditing()
+void PPM::endDimensionEditing(std::size_t new_width, std::size_t new_height)
 {
     if(!editingPicture)
     {
@@ -142,6 +141,9 @@ void PPM::endDimensionEditing()
     picture = editingPicture;
 
     editingPicture = nullptr;
+
+    width = new_width;
+    height = new_height;
 }
 
 void PPM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY)

@@ -113,7 +113,7 @@ int RgbToGrayscale(Rgb Rgb_value, int max_value)
     return grayscale;
 }
 
-void Image::write()
+void Image::write(std::string output_location)
 {
     std::ofstream ofile(output_location, std::ofstream::trunc);
 
@@ -206,7 +206,7 @@ void Image::crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, 
         }
     }
 
-    endDimensionEditing();
+    endDimensionEditing(newWidth, newHeight);
 
     width = newWidth;
     height = newHeight;
@@ -243,7 +243,7 @@ void Image::resize(int widthInput, int heightInput, bool percentage)
         }
     }
 
-    endDimensionEditing();
+    endDimensionEditing(newWidth, newHeight);
 
     width = newWidth;
     height = newHeight;

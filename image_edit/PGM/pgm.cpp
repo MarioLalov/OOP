@@ -44,10 +44,9 @@ int **PGM::allocateNew(std::size_t curWidth, std::size_t curHeight)
     }
 }
 
-PGM::PGM(std::string in_format, std::ifstream &file, std::string in_output_location)
+PGM::PGM(std::string in_format, std::ifstream &file)
 {
     format = in_format;
-    output_location = in_output_location;
 
     if (!file.is_open())
     {
@@ -127,7 +126,7 @@ void PGM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
     editingPicture = allocateNew(new_width, new_height);
 }
 
-void PGM::endDimensionEditing()
+void PGM::endDimensionEditing(std::size_t new_width, std::size_t new_height)
 {
     if(!editingPicture)
     {
@@ -138,6 +137,9 @@ void PGM::endDimensionEditing()
     picture = editingPicture;
 
     editingPicture = nullptr;
+
+    width = new_width;
+    height = new_height;
 }
 
 void PGM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY)
