@@ -10,7 +10,7 @@ private:
     Rgb **editingPicture = nullptr;
 
     Rgb **allocateNew(std::size_t curWidth, std::size_t curHeight);
-    void deleteArr(Rgb **arr, std::size_t curHeight, std::size_t curWidht);
+    void deleteArr(Rgb **arr, std::size_t curHeight);
     
 public:
     PPM(std::string in_format, std::ifstream &file);

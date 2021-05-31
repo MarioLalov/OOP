@@ -1,6 +1,6 @@
 #include "ppm.h"
 
-void PPM::deleteArr(Rgb **arr, std::size_t curHeight, std::size_t curWidth)
+void PPM::deleteArr(Rgb **arr, std::size_t curHeight)
 {
     if (arr != nullptr)
     {
@@ -31,14 +31,13 @@ Rgb **PPM::allocateNew(std::size_t curWidth, std::size_t curHeight)
         for (int i = 0; i < curHeight; i++)
         {
             pic[i] = new Rgb[curWidth];
-
         }
 
         return pic;
     }
     catch (const std::bad_alloc &err)
     {
-        deleteArr(pic, curHeight, curWidth);
+        deleteArr(pic, curHeight);
 
         throw err;
     }
@@ -47,17 +46,33 @@ Rgb **PPM::allocateNew(std::size_t curWidth, std::size_t curHeight)
 PPM::PPM(std::string in_format, std::ifstream &file)
 {
     format = in_format;
-    
+
     if (!file.is_open())
     {
         throw std::invalid_argument("File problem occured!");
     }
 
+    int in_width, in_height;
+
     checkForComments(file);
-    file >> width >> height;
+    file >> in_width >> in_height;
     checkForComments(file);
+
+    if (in_width < 0 || in_height < 0)
+    {
+        throw std::invalid_argument("Invalid file dimensions!");
+    }
+
+    width = in_width;
+    height = in_height;
+
     file >> maxRgbValue;
     checkForComments(file);
+
+    if (maxRgbValue < 0 || maxRgbValue > 255)
+    {
+        throw std::invalid_argument("Unsupported color!");
+    }
 
     //allocate memory
     try
@@ -74,6 +89,15 @@ PPM::PPM(std::string in_format, std::ifstream &file)
         for (int j = 0; j < width; j++)
         {
             file >> picture[i][j].red >> picture[i][j].green >> picture[i][j].blue;
+
+            if(picture[i][j].red < 0 || picture[i][j].green < 0 || picture[i][j].blue < 0 ||
+               picture[i][j].red > maxRgbValue || picture[i][j].green > maxRgbValue || picture[i][j].blue > maxRgbValue)
+               {
+                   deleteArr(picture, height);
+                   picture = nullptr;
+
+                   throw std::invalid_argument("Invalid pixel value!");
+               }
             checkForComments(file);
         }
     }
@@ -105,7 +129,7 @@ int PPM::getPixelGrayscale(std::size_t x, std::size_t y) const
 
 Rgb PPM::getPixelRgb(std::size_t x, std::size_t y) const
 {
-    if(x >= width || y >= height || x < 0 || y < 0)
+    if (x >= width || y >= height || x < 0 || y < 0)
     {
         throw std::out_of_range("Out of range");
     }
@@ -122,7 +146,7 @@ void PPM::setPixel(std::size_t x, std::size_t y, Rgb value)
 
 void PPM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
 {
-    if(editingPicture)
+    if (editingPicture)
     {
         throw std::logic_error("Operation already started!");
     }
@@ -132,12 +156,12 @@ void PPM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
 
 void PPM::endDimensionEditing(std::size_t new_width, std::size_t new_height)
 {
-    if(!editingPicture)
+    if (!editingPicture)
     {
         throw std::logic_error("Operation is not started!");
     }
 
-    deleteArr(picture, height, width);
+    deleteArr(picture, height);
     picture = editingPicture;
 
     editingPicture = nullptr;
@@ -166,7 +190,7 @@ void PPM::writeFormatInfo(std::ofstream &file)
 
 PPM::~PPM()
 {
-    deleteArr(picture, height, width);
+    deleteArr(picture, height);
 
     std::cout << "all clear";
 }

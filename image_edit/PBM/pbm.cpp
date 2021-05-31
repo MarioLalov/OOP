@@ -54,9 +54,19 @@ PBM::PBM(std::string in_format, std::ifstream &file)
         throw std::invalid_argument("File problem occured!");
     }
 
+    int in_width, in_height;
+
     checkForComments(file);
-    file >> width >> height;
+    file >> in_width >> in_height;
     checkForComments(file);
+
+    if(in_width < 0 || in_height < 0)
+    {
+        throw std::invalid_argument("Invalid file dimensions!");
+    }
+
+    width = in_width;
+    height = in_height;
 
     //allocate memory
     try
@@ -75,6 +85,14 @@ PBM::PBM(std::string in_format, std::ifstream &file)
         {
             file >> picture[i][j];
             checkForComments(file);
+
+            if(picture[i][j] != 1 && picture[i][j] != 0)
+            {
+                deleteArr(picture, height);
+                picture = nullptr;
+                
+                throw std::invalid_argument("Invalid pixel value!");
+            }
         }
     }
 }

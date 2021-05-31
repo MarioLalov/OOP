@@ -33,6 +33,27 @@ TEST_CASE("files with comments")
     //REQUIRE(pic.getPixelRgb(1,2).red == 3);
 }
 
+TEST_CASE("invalid files")
+{
+    SECTION("invalid color values")
+    {
+        std::ifstream file("C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testInvalidColorPBM.pbm", std::ios::binary);
+        std::string format;
+        file >> format;
+
+        REQUIRE_THROWS_AS(PBM(format, file), std::invalid_argument);
+    }
+
+    SECTION("invalid width and height")
+    {
+        std::ifstream file("C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testInvalidDimPBM.pbm", std::ios::binary);
+        std::string format;
+        file >> format;
+
+        REQUIRE_THROWS_AS(PBM(format, file), std::invalid_argument);
+    }
+}
+
 TEST_CASE("crop")
 {
     std::ifstream file("C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testPBM.pbm", std::ios::binary);
