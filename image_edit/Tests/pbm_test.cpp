@@ -33,6 +33,28 @@ TEST_CASE("files with comments")
     //REQUIRE(pic.getPixelRgb(1,2).red == 3);
 }
 
+TEST_CASE("parametric constructor")
+{
+    SECTION("default behavior")
+    {
+        PBM pic("P1", 15, 18, 1);
+
+        REQUIRE(pic.getHeight() == 18);
+        REQUIRE(pic.getWidth() == 15);
+        REQUIRE(!pic.getPixelGrayscale(3, 3) == 1);
+    }
+
+    SECTION("dimensions error")
+    {
+        REQUIRE_THROWS_AS(PBM("P1", 15, -18, 1), std::invalid_argument);
+    }
+
+    SECTION("invalid monochrome value error")
+    {
+        REQUIRE_THROWS_AS(PBM("P1", 15, 18, 7), std::invalid_argument);
+    }
+}
+
 TEST_CASE("invalid files")
 {
     SECTION("invalid color values")

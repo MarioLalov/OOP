@@ -5,8 +5,35 @@
 #include "PGM/pgm.h"
 #include "PPM/ppm.h"
 #include "Editor/image_editor.h"
+#include "Commands/commands.h"
 
 int main()
+{
+    Image *image;
+    std::string command;
+
+    while (true)
+    {
+        std::getline(std::cin, command);
+
+        try
+        {
+            Commands::initiateCommand(command, image);
+        }
+        catch (const std::invalid_argument &err)
+        {
+            std::cout << err.what() << '\n';
+        }
+        catch (const std::logic_error &err)
+        {
+            std::cout << err.what() << '\n';
+        }
+    }
+
+    return 0;
+}
+
+/*int main()
 {
     std::ifstream file("Files/TestImg.ppm", std::ios::binary);
 
@@ -22,13 +49,13 @@ int main()
 
     //PBM pic(format, file, "Files/text1.pbm");
     //PGM pic(format, file, "Files/textDith.pgm");
-    PPM *pic = new PPM(format, file);
+    Image *pic = new PPM(format, file);
 
     //pic.print();
 
     std::cout << "--------------------------------" << std::endl;
 
-    //ImageEditor::crop(pic, 130,120, 180, 170);
+    ImageEditor::crop(pic, 130,120, 180, 170);
     //std::cout << pic.getPixelGrayscale(0, 6);
 
     //ImageEditor::resize(pic, 600,600, true);
@@ -43,8 +70,8 @@ int main()
     //ImageEditor::sierraDithering(pic);
     //ImageEditor::twoRowSierra(pic);
     //ImageEditor::sierraLite(pic);
-    ImageEditor::orderedDithering(pic, 8);
-    pic->write("Files/text7.ppm");
+    //ImageEditor::orderedDithering(pic, 8);
+    pic->write("Files/text8.ppm");
 
     //pic.print();
 
@@ -53,4 +80,4 @@ int main()
     delete pic;
 
     return 0;
-}
+}*/

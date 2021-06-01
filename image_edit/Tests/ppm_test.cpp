@@ -32,6 +32,43 @@ TEST_CASE("files with comments")
     REQUIRE(pic.getPixelRgb(1, 1).red == 5);
 }
 
+TEST_CASE("parametric constructor")
+{
+    SECTION("default behavior")
+    {
+        Rgb color(78, 30, 56);
+
+        PPM pic("P3", 15, 18, color);
+
+        REQUIRE(pic.getHeight() == 18);
+        REQUIRE(pic.getWidth() == 15);
+        REQUIRE(pic.getPixelRgb(5, 5).red == 78);
+        REQUIRE(pic.getPixelRgb(5, 5).green == 30);
+        REQUIRE(pic.getPixelRgb(5, 5).blue == 56);
+    }
+
+    SECTION("dimensions error")
+    {
+        Rgb color(78, 30, 56);
+
+        REQUIRE_THROWS_AS(PPM("P3", 15, -18, color), std::invalid_argument);
+    }
+
+    SECTION("negative RGB values error")
+    {
+        Rgb color(78, -1, 56);
+
+        REQUIRE_THROWS_AS(PPM("P3", 15, 18, color), std::invalid_argument);
+    }
+
+    SECTION("too high RGB vlaues error")
+    {
+        Rgb color(78, 30, 257);
+
+        REQUIRE_THROWS_AS(PPM("P3", 15, 18, color), std::invalid_argument);
+    }
+}
+
 TEST_CASE("invalid files")
 {
     SECTION("invalid color values")
@@ -68,7 +105,7 @@ TEST_CASE("crop")
     std::string format;
     file >> format;
 
-    PPM* pic = new PPM(format, file);
+    PPM *pic = new PPM(format, file);
 
     SECTION("angel of picture crop")
     {
@@ -77,7 +114,7 @@ TEST_CASE("crop")
 
         REQUIRE(pic->getHeight() == 2);
         REQUIRE(pic->getWidth() == 2);
-        REQUIRE(pic->getPixelRgb(0,0).red == 5);
+        REQUIRE(pic->getPixelRgb(0, 0).red == 5);
     }
 
     SECTION("mid picture crop")
@@ -87,7 +124,7 @@ TEST_CASE("crop")
 
         REQUIRE(pic->getHeight() == 2);
         REQUIRE(pic->getWidth() == 2);
-        REQUIRE(pic->getPixelRgb(0,1).red == 10);
+        REQUIRE(pic->getPixelRgb(0, 1).red == 10);
     }
 
     SECTION("out of bound crop")
@@ -97,7 +134,7 @@ TEST_CASE("crop")
 
         REQUIRE(pic->getHeight() == 3);
         REQUIRE(pic->getWidth() == 3);
-        REQUIRE(pic->getPixelRgb(0,1).red == 10);
+        REQUIRE(pic->getPixelRgb(0, 1).red == 10);
     }
 
     SECTION("out of bound crop with x out of range parameter")
@@ -107,7 +144,7 @@ TEST_CASE("crop")
 
         REQUIRE(pic->getHeight() == 3);
         REQUIRE(pic->getWidth() == 3);
-        REQUIRE(pic->getPixelRgb(0,1).red == 10);
+        REQUIRE(pic->getPixelRgb(0, 1).red == 10);
     }
 
     SECTION("out of bound crop with y out of range parameter")
@@ -117,7 +154,7 @@ TEST_CASE("crop")
 
         REQUIRE(pic->getHeight() == 3);
         REQUIRE(pic->getWidth() == 3);
-        REQUIRE(pic->getPixelRgb(0,1).red == 10);
+        REQUIRE(pic->getPixelRgb(0, 1).red == 10);
     }
 
     delete pic;
@@ -129,7 +166,7 @@ TEST_CASE("resize")
     std::string format;
     file >> format;
 
-    PPM* pic = new PPM(format, file);
+    PPM *pic = new PPM(format, file);
 
     SECTION("pixel resize")
     {

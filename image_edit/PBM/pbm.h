@@ -13,8 +13,9 @@ private:
     int **allocateNew(std::size_t widht, std::size_t height);
     void deleteArr(int **arr, std::size_t curHeight);
     bool validate(std::ifstream &file);
-    
+
 public:
+    PBM(std::string in_format, int in_width, int in_height, int color);
     PBM(std::string in_format, std::ifstream &file);
     Rgb getPixelRgb(std::size_t x, std::size_t y) const;
     int getPixelGrayscale(std::size_t x, std::size_t y) const;

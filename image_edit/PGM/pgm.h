@@ -9,12 +9,12 @@ private:
     int **picture;
     int **editingPicture = nullptr;
 
-    int** allocateNew(std::size_t widht, std::size_t height);
-    void deleteArr(int** arr, std::size_t curHeight);
+    int **allocateNew(std::size_t widht, std::size_t height);
+    void deleteArr(int **arr, std::size_t curHeight);
 
 public:
+    PGM(std::string in_format, int in_width, int in_height, int color);
     PGM(std::string in_format, std::ifstream &file);
-    //void crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y);
     Rgb getPixelRgb(std::size_t x, std::size_t y) const;
     int getPixelGrayscale(std::size_t x, std::size_t y) const;
     void setPixel(std::size_t x, std::size_t y, Rgb value);
@@ -24,8 +24,8 @@ public:
     void print();
     void createCropped(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y);
     void createResized(std::size_t newWidth, std::size_t newHeight);
-    void writePixel(std::size_t x, std::size_t y, std::ofstream& file);
-    void writeFormatInfo(std::ofstream& file);
+    void writePixel(std::size_t x, std::size_t y, std::ofstream &file);
+    void writeFormatInfo(std::ofstream &file);
     ~PGM();
 };
 

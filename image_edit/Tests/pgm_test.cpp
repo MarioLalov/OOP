@@ -33,6 +33,33 @@ TEST_CASE("files with comments")
     //REQUIRE(pic.getPixelRgb(1,2).red == 3);
 }
 
+TEST_CASE("parametric constructor")
+{
+    SECTION("default behavior")
+    {
+        PGM pic("P2", 15, 18, 19);
+
+        REQUIRE(pic.getHeight() == 18);
+        REQUIRE(pic.getWidth() == 15);
+        REQUIRE(pic.getPixelGrayscale(3, 3) == 19);
+    }
+
+    SECTION("dimensions error")
+    {
+        REQUIRE_THROWS_AS(PGM("P2", 15, -18, 19), std::invalid_argument);
+    }
+
+    SECTION("negative grayscale values error")
+    {
+        REQUIRE_THROWS_AS(PGM("P2", 15, 18, -7), std::invalid_argument);
+    }
+
+    SECTION("too high grayscale vlaues error")
+    {
+        REQUIRE_THROWS_AS(PGM("P2", 15, 18, 260), std::invalid_argument);
+    }
+}
+
 TEST_CASE("invalid files")
 {
     SECTION("invalid color values")
@@ -128,7 +155,7 @@ TEST_CASE("resize")
     std::string format;
     file >> format;
 
-    PGM* pic = new PGM(format, file);
+    PGM *pic = new PGM(format, file);
 
     SECTION("pixel resize")
     {

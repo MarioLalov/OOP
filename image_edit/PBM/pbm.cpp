@@ -45,6 +45,32 @@ int **PBM::allocateNew(std::size_t curWidth, std::size_t curHeight)
     }
 }
 
+PBM::PBM(std::string in_format, int in_width, int in_height, int color)
+{
+    if(in_width < 0 || in_height < 0)
+    {
+        throw std::invalid_argument("Invalid file dimensions!");
+    }
+
+    if(color != 1 && color != 0)
+    {
+        throw std::invalid_argument("Unsupported color!");
+    }
+
+    format = in_format;
+    width = in_width;
+    height = in_height;
+
+    picture = allocateNew(width, height);
+    for(std::size_t i = 0; i < height; i++)
+    {
+        for(std::size_t j = 0; j < width; j++)
+        {
+            picture[i][j] = color;
+        }
+    }
+}
+
 PBM::PBM(std::string in_format, std::ifstream &file)
 {
     format = in_format;
@@ -90,7 +116,7 @@ PBM::PBM(std::string in_format, std::ifstream &file)
             {
                 deleteArr(picture, height);
                 picture = nullptr;
-                
+
                 throw std::invalid_argument("Invalid pixel value!");
             }
         }

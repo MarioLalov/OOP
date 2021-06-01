@@ -43,6 +43,33 @@ Rgb **PPM::allocateNew(std::size_t curWidth, std::size_t curHeight)
     }
 }
 
+PPM::PPM(std::string in_format, int in_width, int in_height, Rgb color)
+{
+    if (in_width < 0 || in_height < 0)
+    {
+        throw std::invalid_argument("Invalid file dimensions!");
+    }
+
+    if (color.red > 255 || color.red < 0 || color.green > 255 || color.green < 0 || color.blue > 255 || color.blue < 0)
+    {
+        throw std::invalid_argument("Unsupported color!");
+    }
+
+    format = in_format;
+    width = in_width;
+    height = in_height;
+    maxRgbValue = 255;
+
+    picture = allocateNew(width, height);
+    for (std::size_t i = 0; i < height; i++)
+    {
+        for (std::size_t j = 0; j < width; j++)
+        {
+            picture[i][j] = color;
+        }
+    }
+}
+
 PPM::PPM(std::string in_format, std::ifstream &file)
 {
     format = in_format;
@@ -90,14 +117,14 @@ PPM::PPM(std::string in_format, std::ifstream &file)
         {
             file >> picture[i][j].red >> picture[i][j].green >> picture[i][j].blue;
 
-            if(picture[i][j].red < 0 || picture[i][j].green < 0 || picture[i][j].blue < 0 ||
-               picture[i][j].red > maxRgbValue || picture[i][j].green > maxRgbValue || picture[i][j].blue > maxRgbValue)
-               {
-                   deleteArr(picture, height);
-                   picture = nullptr;
+            if (picture[i][j].red < 0 || picture[i][j].green < 0 || picture[i][j].blue < 0 ||
+                picture[i][j].red > maxRgbValue || picture[i][j].green > maxRgbValue || picture[i][j].blue > maxRgbValue)
+            {
+                deleteArr(picture, height);
+                picture = nullptr;
 
-                   throw std::invalid_argument("Invalid pixel value!");
-               }
+                throw std::invalid_argument("Invalid pixel value!");
+            }
             checkForComments(file);
         }
     }
@@ -142,6 +169,15 @@ Rgb PPM::getPixelRgb(std::size_t x, std::size_t y) const
 void PPM::setPixel(std::size_t x, std::size_t y, Rgb value)
 {
     picture[y][x] = value;
+}
+
+Image *PPM::createEditingPicture(std::size_t new_width, std::size_t new_height)
+{
+    Rgb black(0, 0, 0);
+
+    PPM *newPic = new PPM("P3", new_width, new_height, black);
+
+    return newPic;
 }
 
 void PPM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
