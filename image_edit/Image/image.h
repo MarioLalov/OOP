@@ -28,8 +28,8 @@ protected:
     std::size_t width;
     std::size_t height;
 
-    virtual void writePixel(std::size_t x, std::size_t y, std::ofstream &file) = 0;
-    virtual void writeFormatInfo(std::ofstream &file) = 0;
+    virtual void writePixel(std::size_t x, std::size_t y, std::ofstream &file, std::string extension) = 0;
+    virtual void writeFormatInfo(std::ofstream &file, std::string extension) = 0;
 
 public:
     void crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y);
@@ -41,7 +41,7 @@ public:
     virtual void endDimensionEditing(std::size_t width, std::size_t height) = 0;
     virtual Rgb getPixelRgb(std::size_t x, std::size_t y) const = 0;
     virtual void setPixel(std::size_t x, std::size_t y, Rgb value) = 0;
-    void write(std::string output_location);
+    void write(std::string output_location, std::string extension);
     void errorDiffusion();
     void twoDimErrorDiffusion();
     void floydDithering();

@@ -9,16 +9,19 @@
 
 int main()
 {
-    Image *image;
+    Image *image = nullptr;
     std::string command;
 
-    while (true)
+    bool end = false;
+
+    while (!end)
     {
+        std::cout << "Enter command: ";
         std::getline(std::cin, command);
 
         try
         {
-            Commands::initiateCommand(command, image);
+            Commands::initiateCommand(command, image, end);
         }
         catch (const std::invalid_argument &err)
         {
@@ -28,6 +31,8 @@ int main()
         {
             std::cout << err.what() << '\n';
         }
+
+        command.clear();
     }
 
     return 0;

@@ -105,7 +105,7 @@ int RgbToGrayscale(Rgb Rgb_value, int max_value)
 {
     //double grayscale = ((Rgb_value[0] + Rgb_value[1] + Rgb_value[2]) / 3) * (max_value / 255);
     //double grayscale = ((Rgb_value.red + Rgb_value.green + Rgb_value.blue) / 3) * (max_value / 255);
-    int grayscale = (Rgb_value.green*max_value)/255;
+    int grayscale = (Rgb_value.green * max_value) / 255;
 
     //std::cout << Rgb_value.red << ": ";
     //std::cout << grayscale << " ";
@@ -113,27 +113,33 @@ int RgbToGrayscale(Rgb Rgb_value, int max_value)
     return grayscale;
 }
 
-void Image::write(std::string output_location)
+void Image::write(std::string output_location, std::string extension)
 {
+    //transfer to virtual function
+    if ((extension == "pbm" && (format == "P2" || format == "P3")) ||
+        (extension == "pgm" && format == "P3"))
+    {
+        throw std::invalid_argument("Incompatible file formats");
+    }
+
     std::ofstream ofile(output_location, std::ofstream::trunc);
 
-    writeFormatInfo(ofile);
+    writeFormatInfo(ofile, extension);
 
     for (std::size_t i = 0; i < height; i++)
     {
         for (std::size_t j = 0; j < width; j++)
         {
-            writePixel(i, j, ofile);
+            writePixel(i, j, ofile, extension);
         }
 
-        if (format != "P3")
+        if (format != "P3" && extension != "ppm")
         {
             ofile << std::endl;
         }
     }
 
     ofile.close();
-    std::cout << "out";
 }
 
 std::size_t Image::getWidth() const

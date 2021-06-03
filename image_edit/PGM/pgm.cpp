@@ -46,12 +46,12 @@ int **PGM::allocateNew(std::size_t curWidth, std::size_t curHeight)
 
 PGM::PGM(std::string in_format, int in_width, int in_height, int color)
 {
-    if(in_width < 0 || in_height < 0)
+    if (in_width < 0 || in_height < 0)
     {
         throw std::invalid_argument("Invalid file dimensions!");
     }
 
-    if(color > 255 || color < 0)
+    if (color > 255 || color < 0)
     {
         throw std::invalid_argument("Unsupported color!");
     }
@@ -62,9 +62,9 @@ PGM::PGM(std::string in_format, int in_width, int in_height, int color)
     maxGrayscaleValue = 255;
 
     picture = allocateNew(width, height);
-    for(std::size_t i = 0; i < height; i++)
+    for (std::size_t i = 0; i < height; i++)
     {
-        for(std::size_t j = 0; j < width; j++)
+        for (std::size_t j = 0; j < width; j++)
         {
             picture[i][j] = color;
         }
@@ -81,12 +81,12 @@ PGM::PGM(std::string in_format, std::ifstream &file)
     }
 
     int in_width, in_height;
-    
+
     checkForComments(file);
     file >> in_width >> in_height;
     checkForComments(file);
 
-    if(in_width < 0 || in_height < 0)
+    if (in_width < 0 || in_height < 0)
     {
         throw std::invalid_argument("Invalid file dimensions!");
     }
@@ -97,7 +97,7 @@ PGM::PGM(std::string in_format, std::ifstream &file)
     file >> maxGrayscaleValue;
     checkForComments(file);
 
-    if(maxGrayscaleValue < 0 || maxGrayscaleValue > 255)
+    if (maxGrayscaleValue < 0 || maxGrayscaleValue > 255)
     {
         throw std::invalid_argument("Unsupported color!");
     }
@@ -119,7 +119,7 @@ PGM::PGM(std::string in_format, std::ifstream &file)
             file >> picture[i][j];
             checkForComments(file);
 
-            if(picture[i][j] < 0 || picture[i][j] > maxGrayscaleValue)
+            if (picture[i][j] < 0 || picture[i][j] > maxGrayscaleValue)
             {
                 deleteArr(picture, height);
                 picture = nullptr;
@@ -149,7 +149,7 @@ void PGM::print()
 
 Rgb PGM::getPixelRgb(std::size_t x, std::size_t y) const
 {
-    if(x >= width || y >= height || x < 0 || y < 0)
+    if (x >= width || y >= height || x < 0 || y < 0)
     {
         throw std::out_of_range("Out of range");
     }
@@ -169,7 +169,7 @@ void PGM::setPixel(std::size_t x, std::size_t y, Rgb value)
 
 void PGM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
 {
-    if(editingPicture)
+    if (editingPicture)
     {
         throw std::logic_error("Operation already started!");
     }
@@ -179,7 +179,7 @@ void PGM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
 
 void PGM::endDimensionEditing(std::size_t new_width, std::size_t new_height)
 {
-    if(!editingPicture)
+    if (!editingPicture)
     {
         throw std::logic_error("Operation is not started!");
     }
@@ -198,78 +198,34 @@ void PGM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, s
     editingPicture[destY][destX] = picture[srcY][srcX];
 }
 
-void PGM::createResized(std::size_t newWidth, std::size_t newHeight)
+void PGM::writePixel(std::size_t x, std::size_t y, std::ofstream &file, std::string extension)
 {
-
-    int **newPicture = nullptr;
-
-    //allocate
-    try
+    if (extension == "pgm")
     {
-        newPicture = allocateNew(newWidth, newHeight);
+        file << getPixelGrayscale(y, x) << " ";
     }
-    catch (const std::bad_alloc &err)
+    else if (extension == "ppm")
     {
-        throw err;
+        Rgb value = getPixelRgb(y, x);
+
+        file << value.red << " " << value.green << " " << value.blue << std::endl;
     }
-
-    //resize
-    for (int i = 0; i < newHeight; i++)
-    {
-        for (int j = 0; j < newWidth; j++)
-        {
-            std::size_t srcX = roundToInt((((double)j) / ((double)newWidth)) * ((double)width));
-            srcX = std::min(srcX, width - 1);
-            std::size_t srcY = roundToInt((((double)i) / ((double)newHeight)) * ((double)height));
-            srcY = std::min(srcY, height - 1);
-
-            newPicture[i][j] = getPixelGrayscale(srcX, srcY);
-        }
-    }
-
-    deleteArr(picture, height);
-
-    picture = newPicture;
-    height = newHeight;
-    width = newWidth;
 }
 
-void PGM::createCropped(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)
+void PGM::writeFormatInfo(std::ofstream &file, std::string extension)
 {
-    int **newPicture = nullptr;
-
-    try
+    if (extension == "ppm")
     {
-        newPicture = allocateNew((lower_x - upper_x + 1), (lower_y - upper_y + 1));
+        file << "P3" << std::endl;
+        file << width << " " << height << std::endl;
+        file << 255 << std::endl;
     }
-    catch (const std::bad_alloc &err)
+    else
     {
-        throw err;
+        file << format << std::endl;
+        file << width << " " << height << std::endl;
+        file << maxGrayscaleValue << std::endl;
     }
-
-    for (int i = upper_y, k = 0; i <= lower_y; i++, k++)
-    {
-        for (int j = upper_x, l = 0; j <= lower_x; j++, l++)
-        {
-            newPicture[k][l] = picture[i][j];
-        }
-    }
-
-    deleteArr(picture, height);
-
-    picture = newPicture;
-}
-
-void PGM::writePixel(std::size_t x, std::size_t y, std::ofstream &file)
-{
-    file << getPixelGrayscale(y, x) << " ";
-}
-
-void PGM::writeFormatInfo(std::ofstream &file)
-{
-    file << format << std::endl;
-    file << width << " " << height << std::endl;
-    file << maxGrayscaleValue << std::endl;
 }
 
 PGM::~PGM()

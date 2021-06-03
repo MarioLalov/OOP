@@ -211,13 +211,13 @@ void PPM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, s
     editingPicture[destY][destX] = picture[srcY][srcX];
 }
 
-void PPM::writePixel(std::size_t x, std::size_t y, std::ofstream &file)
+void PPM::writePixel(std::size_t x, std::size_t y, std::ofstream &file, std::string extension)
 {
     Rgb value = getPixelRgb(y, x);
     file << value.red << " " << value.green << " " << value.blue << std::endl;
 }
 
-void PPM::writeFormatInfo(std::ofstream &file)
+void PPM::writeFormatInfo(std::ofstream &file, std::string extension)
 {
     file << format << std::endl;
     file << width << " " << height << std::endl;

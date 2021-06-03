@@ -6,7 +6,6 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <filesystem>
 #include "../Image/image.h"
 #include "../PBM/pbm.h"
 #include "../PGM/pgm.h"
@@ -23,12 +22,16 @@ private:
 
 public:
     static ditheringAlg dithering[10];
-    static void initiateCommand(std::string command, Image *&image);
+    static void initiateCommand(std::string command, Image *&image, bool &end);
     static void open(std::string file_path, Image *&image);
     static void save(Image *&image);
     static void saveas(std::string file_path, Image *&image);
     static void dither(Image *&image);
     static void close(Image *&image);
+    static void createNew(Image *& image, std::vector<std::string> &params);
+    static void crop(Image *&image, std::vector<std::string> &params);
+    static void resize(Image *&image, std::vector<std::string> &params);
+    static void exit(Image *&image);
 };
 
 //helpers

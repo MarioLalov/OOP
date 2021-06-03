@@ -47,12 +47,12 @@ int **PBM::allocateNew(std::size_t curWidth, std::size_t curHeight)
 
 PBM::PBM(std::string in_format, int in_width, int in_height, int color)
 {
-    if(in_width < 0 || in_height < 0)
+    if (in_width < 0 || in_height < 0)
     {
         throw std::invalid_argument("Invalid file dimensions!");
     }
 
-    if(color != 1 && color != 0)
+    if (color != 1 && color != 0)
     {
         throw std::invalid_argument("Unsupported color!");
     }
@@ -62,9 +62,9 @@ PBM::PBM(std::string in_format, int in_width, int in_height, int color)
     height = in_height;
 
     picture = allocateNew(width, height);
-    for(std::size_t i = 0; i < height; i++)
+    for (std::size_t i = 0; i < height; i++)
     {
-        for(std::size_t j = 0; j < width; j++)
+        for (std::size_t j = 0; j < width; j++)
         {
             picture[i][j] = color;
         }
@@ -86,7 +86,7 @@ PBM::PBM(std::string in_format, std::ifstream &file)
     file >> in_width >> in_height;
     checkForComments(file);
 
-    if(in_width < 0 || in_height < 0)
+    if (in_width < 0 || in_height < 0)
     {
         throw std::invalid_argument("Invalid file dimensions!");
     }
@@ -112,7 +112,7 @@ PBM::PBM(std::string in_format, std::ifstream &file)
             file >> picture[i][j];
             checkForComments(file);
 
-            if(picture[i][j] != 1 && picture[i][j] != 0)
+            if (picture[i][j] != 1 && picture[i][j] != 0)
             {
                 deleteArr(picture, height);
                 picture = nullptr;
@@ -166,7 +166,7 @@ void PBM::setPixel(std::size_t x, std::size_t y, Rgb value)
 
 void PBM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
 {
-    if(editingPicture)
+    if (editingPicture)
     {
         throw std::logic_error("Operation already started!");
     }
@@ -176,7 +176,7 @@ void PBM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
 
 void PBM::endDimensionEditing(std::size_t new_width, std::size_t new_height)
 {
-    if(!editingPicture)
+    if (!editingPicture)
     {
         throw std::logic_error("Operation is not started!");
     }
@@ -195,15 +195,46 @@ void PBM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, s
     editingPicture[destY][destX] = picture[srcY][srcX];
 }
 
-void PBM::writePixel(std::size_t x, std::size_t y, std::ofstream &file)
+void PBM::writePixel(std::size_t x, std::size_t y, std::ofstream &file, std::string extension)
 {
-    file << !getPixelGrayscale(y, x) << " ";
+    if (extension == "pbm")
+    {
+        file << !getPixelGrayscale(y, x) << " ";
+    }
+    else if (extension == "pgm")
+    {
+        int value = (getPixelGrayscale(y, x) == 0) ? 0 : 255;
+        file << value << " ";
+    }
+    else if (extension == "ppm")
+    {
+        Rgb value = getPixelRgb(y, x);
+
+        file << value.red << " " << value.green << " " << value.blue << std::endl;
+    }
 }
 
-void PBM::writeFormatInfo(std::ofstream &file)
+void PBM::writeFormatInfo(std::ofstream &file, std::string extension)
 {
-    file << format << std::endl;
+    if (extension == "pgm")
+    {
+        file << "P2" << std::endl;
+    }
+    else if (extension == "ppm")
+    {
+        file << "P3" << std::endl;
+    }
+    else
+    {
+        file << format << std::endl;
+    }
+
     file << width << " " << height << std::endl;
+
+    if (extension == "ppm" || extension == "pgm")
+    {
+        file << 255 << std::endl;
+    }
 }
 
 PBM::~PBM()

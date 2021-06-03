@@ -23,8 +23,8 @@ public:
     void startDimensionEditing(std::size_t new_width, std::size_t new_height);
     void endDimensionEditing(std::size_t new_width, std::size_t new_height);
     void copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY);
-    void writePixel(std::size_t x, std::size_t y, std::ofstream &file);
-    void writeFormatInfo(std::ofstream &file);
+    void writePixel(std::size_t x, std::size_t y, std::ofstream &file, std::string extension);
+    void writeFormatInfo(std::ofstream &file, std::string extension);
     void print();
     ~PBM();
 };

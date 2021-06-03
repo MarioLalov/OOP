@@ -23,8 +23,8 @@ public:
     void endDimensionEditing(std::size_t new_width, std::size_t new_height);
     void setPixel(std::size_t x, std::size_t y, Rgb value);
     void print();
-    void writePixel(std::size_t x, std::size_t y, std::ofstream &file);
-    void writeFormatInfo(std::ofstream &file);
+    void writePixel(std::size_t x, std::size_t y, std::ofstream &file, std::string extension);
+    void writeFormatInfo(std::ofstream &file, std::string extension);
     ~PPM();
 };
 
