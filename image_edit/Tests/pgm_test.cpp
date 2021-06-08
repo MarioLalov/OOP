@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-TEST_CASE("regular files")
+TEST_CASE("regular ASCII files")
 {
     std::ifstream file("C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testPGM.pgm", std::ios::binary);
     std::string format;
@@ -15,11 +15,10 @@ TEST_CASE("regular files")
 
     REQUIRE(pic.getWidth() == 24);
     REQUIRE(pic.getHeight() == 7);
-    //REQUIRE(pic.getPixelRgb(1,2).red == 3);
     REQUIRE(pic.getPixelGrayscale(1, 2) == 3);
 }
 
-TEST_CASE("files with comments")
+TEST_CASE("ASCII files with comments")
 {
     std::ifstream file("C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testCommentPGM.pgm", std::ios::binary);
     std::string format;
@@ -30,7 +29,19 @@ TEST_CASE("files with comments")
     REQUIRE(pic.getWidth() == 24);
     REQUIRE(pic.getHeight() == 7);
     REQUIRE(pic.getPixelGrayscale(1, 2) == 3);
-    //REQUIRE(pic.getPixelRgb(1,2).red == 3);
+}
+
+TEST_CASE("binary files")
+{
+    std::ifstream file("C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testBinaryPGM.pgm", std::ios::binary);
+    std::string format;
+    file >> format;
+
+    PGM pic(format, file);
+
+    REQUIRE(pic.getWidth() == 24);
+    REQUIRE(pic.getHeight() == 7);
+    REQUIRE(pic.getPixelGrayscale(1, 2) == 51);
 }
 
 TEST_CASE("parametric constructor")
@@ -118,7 +129,6 @@ TEST_CASE("crop")
 
     SECTION("out of bound crop")
     {
-        //pic.crop(1,1, 8, 15);
         ImageEditor::crop(pic, 1, 1, 30, 15);
 
         REQUIRE(pic->getHeight() == 6);
@@ -128,7 +138,6 @@ TEST_CASE("crop")
 
     SECTION("out of bound crop with x out of range parameter")
     {
-        //pic.crop(1, 1, 8, 5);
         ImageEditor::crop(pic, 1, 1, 30, 3);
 
         REQUIRE(pic->getHeight() == 3);
@@ -138,7 +147,6 @@ TEST_CASE("crop")
 
     SECTION("out of bound crop with y out of range parameter")
     {
-        //pic.crop(1, 1, 3, 15);
         ImageEditor::crop(pic, 1, 1, 3, 15);
 
         REQUIRE(pic->getHeight() == 6);
@@ -159,7 +167,6 @@ TEST_CASE("resize")
 
     SECTION("pixel resize")
     {
-        //pic.resize(7, 8, false);
         ImageEditor::resize(pic, 7, 8, false);
 
         REQUIRE(pic->getHeight() == 8);
@@ -168,7 +175,6 @@ TEST_CASE("resize")
 
     SECTION("percentage resize")
     {
-        //pic.resize(300, 300, true);
         ImageEditor::resize(pic, 200, 200, true);
 
         REQUIRE(pic->getHeight() == 14);

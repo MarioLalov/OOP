@@ -7,11 +7,45 @@
 #include "Editor/image_editor.h"
 #include "Commands/commands.h"
 
+/*! \mainpage Main
+ *
+ * \section Run commands
+ *
+ * Image tests: g++ Image/image.cpp Tests/image_test.cpp
+ * 
+ * PBM tests: g++ Image/image.cpp PBM/pbm.cpp Tests/pbm_test.cpp Editor/image_editor.cpp
+ * 
+ * PGM tests: g++ Image/image.cpp PGM/pgm.cpp Tests/pgm_test.cpp Editor/image_editor.cpp
+ * 
+ * PPM tests: g++ Image/image.cpp PPM/ppm.cpp Tests/ppm_test.cpp Editor/image_editor.cpp
+ * 
+ * Full compilation: g++ Image/image.cpp PBM/pbm.cpp PGM/pgm.cpp PPM/ppm.cpp Editor/image_editor.cpp main.cpp Commands/commands.cpp
+ *
+ * \section Program commands
+ *
+ * open <file_path>
+ * 
+ * new <width> <height> <color>
+ * 
+ * close
+ * 
+ * exit
+ * 
+ * save
+ * 
+ * saveas <file_path>
+ * 
+ * crop <upper_x> <upper_y> <lower_x> <lower_y>
+ * 
+ * resize <width> <height> || <percentage>
+ * 
+ * dither
+ * 
+ */
 int main()
 {
     Image *image = nullptr;
     std::string command;
-
     bool end = false;
 
     while (!end)
@@ -31,58 +65,15 @@ int main()
         {
             std::cout << err.what() << '\n';
         }
+        catch (const std::bad_alloc &err)
+        {
+            std::cout << err.what() << '\n';
+            
+            return 0;
+        }
 
         command.clear();
     }
 
     return 0;
 }
-
-/*int main()
-{
-    std::ifstream file("Files/TestImg.ppm", std::ios::binary);
-
-    char form[3];
-
-    //file >> form[0] >> form[1];
-    //form[2] = '\0';
-    //file.getline(form, 3);
-
-    std::string format; //= form;
-    file >> format;
-    std::cout << format;
-
-    //PBM pic(format, file, "Files/text1.pbm");
-    //PGM pic(format, file, "Files/textDith.pgm");
-    Image *pic = new PPM(format, file);
-
-    //pic.print();
-
-    std::cout << "--------------------------------" << std::endl;
-
-    ImageEditor::crop(pic, 130,120, 180, 170);
-    //std::cout << pic.getPixelGrayscale(0, 6);
-
-    //ImageEditor::resize(pic, 600,600, true);
-
-    //ImageEditor::errorDiffusion(pic);
-    //ImageEditor::twoDimErrorDiffusion(pic);
-    //ImageEditor::floydDithering(pic);
-    //ImageEditor::jarvisDithering(pic);
-    //ImageEditor::stuckiDithering(pic);
-    //ImageEditor::atkinsonDithering(pic);
-    //ImageEditor::burkesDithering(pic);
-    //ImageEditor::sierraDithering(pic);
-    //ImageEditor::twoRowSierra(pic);
-    //ImageEditor::sierraLite(pic);
-    //ImageEditor::orderedDithering(pic, 8);
-    pic->write("Files/text8.ppm");
-
-    //pic.print();
-
-    file.close();
-
-    delete pic;
-
-    return 0;
-}*/

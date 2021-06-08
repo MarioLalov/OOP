@@ -1,10 +1,11 @@
 #include "commands.h"
 
-ditheringAlg Commands::dithering[10] = {ImageEditor::errorDiffusion, ImageEditor::twoDimErrorDiffusion,
+ditheringAlg Commands::dithering[11] = {ImageEditor::errorDiffusion, ImageEditor::twoDimErrorDiffusion,
                                         ImageEditor::floydDithering, ImageEditor::jarvisDithering,
                                         ImageEditor::stuckiDithering, ImageEditor::atkinsonDithering,
                                         ImageEditor::burkesDithering, ImageEditor::sierraDithering,
-                                        ImageEditor::twoRowSierra, ImageEditor::sierraLite};
+                                        ImageEditor::twoRowSierra, ImageEditor::sierraLite,
+                                        ImageEditor::orderedDithering8x8};
 
 std::string Commands::curFilePath;
 
@@ -18,6 +19,7 @@ void toUpper(std::string &input) //make whole string to upper
 
 std::size_t getDitheringIndex()
 {
+    //print dithering menu
     std::cout << "Please enter the index of the dithering algorithm you'd like to use: " << std::endl;
     std::cout << "---------------------------------------------------------------------" << std::endl;
     std::cout << "(1) Error Diffusion Dithering " << std::endl;
@@ -30,7 +32,9 @@ std::size_t getDitheringIndex()
     std::cout << "(8) Sierra Dithering " << std::endl;
     std::cout << "(9) Two-Row Sierra Diffusion Dithering " << std::endl;
     std::cout << "(10) Sierra Dithering " << std::endl;
+    std::cout << "(11) Ordered Dithering with 8x8 Bayer matrix " << std::endl;
 
+    //get dithering algorithm index
     std::string s_index;
     std::size_t index;
     do
@@ -46,37 +50,40 @@ std::size_t getDitheringIndex()
         {
             std::cout << "Please enter a number" << std::endl;
         }
-    } while (index > 10 || index == 0);
+    } while (index > 11 || index == 0);
 
     return index - 1;
 }
 
 void Commands::open(std::string file_path, Image *&image)
 {
+    //if another image is open colse it
     if (image != nullptr)
     {
-        close(image);
+        deleteImage(image);
     }
 
+    //set current file path
     curFilePath = file_path;
     std::string extension = curFilePath.substr(curFilePath.find_last_of(".") + 1);
 
+    //open file for reading
     std::ifstream file(curFilePath, std::ios::binary);
 
     //read format
     std::string format;
     file >> format;
 
-    if (format == "P1" && extension == "pbm")
+    //create image in the correct format
+    if ((format == "P1" || format == "P4") && extension == "pbm")
     {
-        //try
         image = new PBM(format, file);
     }
-    else if (format == "P2" && extension == "pgm")
+    else if ((format == "P2" || format == "P5") && extension == "pgm")
     {
         image = new PGM(format, file);
     }
-    else if (format == "P3" && extension == "ppm")
+    else if ((format == "P3" || format == "P6") && extension == "ppm")
     {
         image = new PPM(format, file);
     }
@@ -86,27 +93,30 @@ void Commands::open(std::string file_path, Image *&image)
     }
 
     file.close();
-
     std::cout << "Successfully opened " << curFilePath << std::endl;
 }
 
-void Commands::close(Image *&image)
+void Commands::deleteImage(Image *&image)
 {
+    //delte image and mark as deleted
     delete image;
     image = nullptr;
 
     std::cout << "Successfully closed " << curFilePath << std::endl;
 
+    //clear file path
     curFilePath.clear();
 }
 
 void Commands::save(Image *&image)
 {
+    //check if an image is loaded
     if (curFilePath.empty() || image == nullptr)
     {
         throw std::logic_error("Cannot save - no document loaded");
     }
 
+    //get extension of current file and save
     std::string extension = curFilePath.substr(curFilePath.find_last_of(".") + 1);
     image->write(curFilePath, extension);
 
@@ -115,6 +125,13 @@ void Commands::save(Image *&image)
 
 void Commands::saveas(std::string file_path, Image *&image)
 {
+    //check if an image is loaded
+    if (curFilePath.empty() || image == nullptr)
+    {
+        throw std::logic_error("Cannot save - no document loaded");
+    }
+
+    //get extension and save if formats are compatible
     std::string extension = file_path.substr(file_path.find_last_of(".") + 1);
     image->write(file_path, extension);
 
@@ -123,11 +140,13 @@ void Commands::saveas(std::string file_path, Image *&image)
 
 void Commands::dither(Image *&image)
 {
-    if (curFilePath.empty())
+    //check if an image is loaded
+    if (curFilePath.empty() || image == nullptr)
     {
         throw std::logic_error("Cannot edit - no document loaded");
     }
 
+    //call dithering algorithm
     dithering[getDitheringIndex()](image);
 
     std::cout << "Dithering successful" << std::endl;
@@ -137,6 +156,7 @@ void Commands::crop(Image *&image, std::vector<std::string> &params)
 {
     int upper_x, upper_y, lower_x, lower_y;
 
+    //get crop parameters and validate
     try
     {
         upper_x = std::stoi(params[0]);
@@ -163,6 +183,7 @@ void Commands::resize(Image *&image, std::vector<std::string> &params)
 {
     int new_width, new_height;
 
+    //check if it's percentage resize or pixel resize
     if (params.size() == 1 && params[0].back() == '%')
     {
         int percentage;
@@ -176,6 +197,7 @@ void Commands::resize(Image *&image, std::vector<std::string> &params)
             throw std::invalid_argument("Invalid parameters resize");
         }
 
+        //call resize for percentage
         ImageEditor::resize(image, percentage, percentage, true);
     }
     else
@@ -190,6 +212,7 @@ void Commands::resize(Image *&image, std::vector<std::string> &params)
             throw std::invalid_argument("Invalid parameters resize");
         }
 
+        //call resize for pixels
         ImageEditor::resize(image, new_width, new_height, false);
     }
 
@@ -198,14 +221,16 @@ void Commands::resize(Image *&image, std::vector<std::string> &params)
 
 void Commands::createNew(Image *&image, std::vector<std::string> &params)
 {
+    //if another image is loaded close it
     if (image != nullptr)
     {
-        close(image);
+        deleteImage(image);
     }
 
     int height, width;
     std::string colorValue;
 
+    //get values and validate
     try
     {
         width = std::stoi(params[0]);
@@ -277,9 +302,10 @@ void Commands::createNew(Image *&image, std::vector<std::string> &params)
 
 void Commands::exit(Image *&image)
 {
+    //close image before exiting
     if(image != nullptr)
     {
-        close(image);
+        deleteImage(image);
     }
 
     std::cout << "Exiting..." << std::endl;
@@ -338,6 +364,7 @@ void Commands::initiateCommand(std::string fullCommand, Image *&image, bool& end
         }
         catch (const std::invalid_argument &err)
         {
+            //if file path is invalid clear curFilePath
             curFilePath.clear();
 
             throw err;
@@ -353,7 +380,7 @@ void Commands::initiateCommand(std::string fullCommand, Image *&image, bool& end
     }
     else if (command == "CLOSE" && params.size() == 0)
     {
-        close(image);
+        deleteImage(image);
     }
     else if (command == "DITHER" && params.size() == 0)
     {

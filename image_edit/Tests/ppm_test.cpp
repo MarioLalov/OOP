@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-TEST_CASE("regular files")
+TEST_CASE("regular ASCII files")
 {
     std::ifstream file("C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testPPM.ppm", std::ios::binary);
     std::string format;
@@ -19,7 +19,7 @@ TEST_CASE("regular files")
     REQUIRE(pic.getPixelGrayscale(1, 1) == 5);
 }
 
-TEST_CASE("files with comments")
+TEST_CASE("ASCII files with comments")
 {
     std::ifstream file("C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testCommentPPM.ppm", std::ios::binary);
     std::string format;
@@ -30,6 +30,20 @@ TEST_CASE("files with comments")
     REQUIRE(pic.getWidth() == 3);
     REQUIRE(pic.getHeight() == 2);
     REQUIRE(pic.getPixelRgb(1, 1).red == 5);
+}
+
+TEST_CASE("binary files")
+{
+    std::ifstream file("C:\\uni\\Sem2\\OOP\\image_edit\\Tests\\testBinaryPPM.ppm", std::ios::binary);
+    std::string format;
+    file >> format;
+
+    PPM pic(format, file);
+
+    REQUIRE(pic.getWidth() == 3);
+    REQUIRE(pic.getHeight() == 2);
+    REQUIRE(pic.getPixelRgb(1, 1).red == 6);
+    REQUIRE(pic.getPixelGrayscale(1, 1) == 6);
 }
 
 TEST_CASE("parametric constructor")
@@ -109,7 +123,6 @@ TEST_CASE("crop")
 
     SECTION("angel of picture crop")
     {
-        //pic.crop(0, 1, 1, 2);
         ImageEditor::crop(pic, 0, 1, 1, 2);
 
         REQUIRE(pic->getHeight() == 2);
@@ -119,7 +132,6 @@ TEST_CASE("crop")
 
     SECTION("mid picture crop")
     {
-        //pic.crop(1, 1, 2, 2);
         ImageEditor::crop(pic, 1, 1, 2, 2);
 
         REQUIRE(pic->getHeight() == 2);
@@ -129,7 +141,6 @@ TEST_CASE("crop")
 
     SECTION("out of bound crop")
     {
-        //pic.crop(1,1, 5, 6);
         ImageEditor::crop(pic, 1, 1, 5, 6);
 
         REQUIRE(pic->getHeight() == 3);
@@ -139,7 +150,6 @@ TEST_CASE("crop")
 
     SECTION("out of bound crop with x out of range parameter")
     {
-        //pic.crop(1,1, 5, 3);
         ImageEditor::crop(pic, 1, 1, 5, 3);
 
         REQUIRE(pic->getHeight() == 3);
@@ -149,7 +159,6 @@ TEST_CASE("crop")
 
     SECTION("out of bound crop with y out of range parameter")
     {
-        //pic.crop(1,1, 3, 6);
         ImageEditor::crop(pic, 1, 1, 3, 6);
 
         REQUIRE(pic->getHeight() == 3);
@@ -170,7 +179,6 @@ TEST_CASE("resize")
 
     SECTION("pixel resize")
     {
-        //pic.resize(13, 17, false);
         ImageEditor::resize(pic, 13, 17, false);
 
         REQUIRE(pic->getHeight() == 17);
@@ -179,7 +187,6 @@ TEST_CASE("resize")
 
     SECTION("percentage resize")
     {
-        //pic.resize(200, 200, true);
         ImageEditor::resize(pic, 200, 200, true);
 
         REQUIRE(pic->getHeight() == 8);

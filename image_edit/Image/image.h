@@ -11,55 +11,142 @@ struct Rgb
     int green;
     int blue;
 
+    //constructors
+    /*!
+    *default constructor
+    *sets all values to 0
+    */
     Rgb();
+    /*!
+    *parametric construtor
+    *sets values to coresponding input
+    */
     Rgb(int in_red, int in_green, int in_blue);
+
+    //operators
+    /*!
+    *assignment operator
+    */
     Rgb &operator=(const Rgb &other);
+    /*!
+    *Rgb values addition operator
+    */
     Rgb operator+(Rgb const &other);
+    /*!
+    *multiply all color values by num
+    */
     Rgb operator*(int const &num);
+    /*!
+    *divide all color values by num
+    */
     Rgb operator/(int const &num);
 };
 
-//template<class T>
 class Image
 {
 protected:
-    //std::string output_location;
     std::string format;
     std::size_t width;
     std::size_t height;
 
-    virtual void writePixel(std::size_t x, std::size_t y, std::ofstream &file, std::string extension) = 0;
-    virtual void writeFormatInfo(std::ofstream &file, std::string extension) = 0;
+    //buffer dimensions
+    //! buffer width
+    std::size_t editingWidth;
+    //! buffer height  
+    std::size_t editingHeight;
+
+    //output in file virtuals
+    virtual void validateFormat(std::string extension) = 0;
+    virtual void writePixel(std::size_t x, std::size_t y, std::ofstream &file, std::string extension, bool binary) = 0;
+    virtual void writeFormatInfo(std::ofstream &file, std::string extension, bool binary) = 0;
 
 public:
-    void crop(std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y);
-    void resize(int widthInput, int heightInput, bool percentage);
+    //getters
     std::size_t getWidth() const;
     std::size_t getHeight() const;
+
+    //editing with changes in dimensions virtuals
     virtual void startDimensionEditing(std::size_t width, std::size_t height) = 0;
     virtual void copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY) = 0;
-    virtual void endDimensionEditing(std::size_t width, std::size_t height) = 0;
+    virtual void endDimensionEditing() = 0;
+
+    //virtual pixel getters
     virtual Rgb getPixelRgb(std::size_t x, std::size_t y) const = 0;
     virtual void setPixel(std::size_t x, std::size_t y, Rgb value) = 0;
+
+    //write in output file
+    /*!
+    *write in output file
+    *
+    *throws when attempting to write in an incomatible file format
+    *@param[in] output_location output file path
+    *@param[in] extension extension of output file
+    */
     void write(std::string output_location, std::string extension);
-    void errorDiffusion();
-    void twoDimErrorDiffusion();
-    void floydDithering();
-    void jarvisDithering();
-    void stuckiDithering();
-    void atkinsonDithering();
-    void burkesDithering();
-    void sierraDithering();
-    void twoRowSierra();
-    void sierraLite();
     //virtual ~Image();
 };
+
 //helpers
+/*!
+*checks for comments from current position
+*@param file file to read from
+*/
 void checkForComments(std::ifstream &file);
 int roundToInt(double num);
+bool getSaveFormat();
+
+/*!
+*pack grayscale in Rgb
+*/
 Rgb grayscaleToRgb(int value, int max_value);
+/*!
+*get grayscale value from Rgb
+*/
 int RgbToGrayscale(Rgb, int max_value);
 
-#endif
+//binary files
+/*!
+*convert in to ASCII
+*@param num number to be converted
+*/
+std::string convertToASCII(int num);
+/*!
+*write number in binary file
+*@param number number to be written
+*@param file file to write in
+*/
+void writeNumberBinary(std::string number, std::ofstream &file);
+/*!
+*write Rgb value in binary file
+*@param color Rgb value to be written
+*@param file file to write in
+*/
+void writeRgbPixelBinary(Rgb color, std::ofstream &file);
+/*!
+*write grayscale value in binary file
+*@param color grayscale value to be written
+*@param file file to write in
+*/
+void writeGrayscalePixelBinary(int color, std::ofstream &file);
+/*!
+*check for comments from current position in binary
+*@param file file to read from
+*/
+void checkForCommentsBinary(std::ifstream &file);
+/*!
+*get number from binary
+*@param file file to read from
+*/
+int getNumberBinary(std::ifstream &file);
+/*!
+*get grayscale from binary
+*@param file file to read from
+*/
+int getGrayscaleBinary(std::ifstream &file);
+/*!
+*get Rgb value from binary
+*@param file file to read from
+*/
+Rgb getRgbBinary(std::ifstream &file);
 
-//120 - 600x800 -> 720x960
+#endif

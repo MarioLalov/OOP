@@ -2,11 +2,13 @@
 
 void ImageEditor::crop(Image *image, std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)
 {
+    //validate input
     if (upper_x > lower_x || upper_y > lower_y)
     {
         throw std::invalid_argument("Reversed coordinates!");
     }
 
+    //assign coordinates if out of range
     if (upper_x >= image->getWidth())
     {
         upper_x = image->getWidth() - 1;
@@ -47,10 +49,14 @@ void ImageEditor::crop(Image *image, std::size_t upper_x, std::size_t upper_y, s
         lower_y = 0;
     }
 
+    //get new dimensions
     std::size_t newWidth = (lower_x - upper_x + 1);
     std::size_t newHeight = (lower_y - upper_y + 1);
+
+    //start editing
     image->startDimensionEditing(newWidth, newHeight);
 
+    //copy values to cropped
     for (int i = upper_y, k = 0; i <= lower_y; i++, k++)
     {
         for (int j = upper_x, l = 0; j <= lower_x; j++, l++)
@@ -59,23 +65,27 @@ void ImageEditor::crop(Image *image, std::size_t upper_x, std::size_t upper_y, s
         }
     }
 
-    image->endDimensionEditing(newWidth, newHeight);
+    //end editing
+    image->endDimensionEditing();
 }
 
 void ImageEditor::resize(Image *image, int widthInput, int heightInput, bool percentage)
 {
+    //get new dimensions
     std::size_t newWidth;
     std::size_t newHeight;
-
     newWidth = (percentage) ? roundToInt(((double)widthInput / 100) * ((double)image->getWidth())) : widthInput;
     newHeight = (percentage) ? roundToInt(((double)heightInput / 100) * ((double)image->getHeight())) : heightInput;
 
+    //start editing
     image->startDimensionEditing(newWidth, newHeight);
 
+    //assign pixel values to resized picture
     for (int i = 0; i < newHeight; i++)
     {
         for (int j = 0; j < newWidth; j++)
         {
+            //calculate source pixel coordinates
             std::size_t srcX = roundToInt((((double)j) / ((double)newWidth)) * ((double)image->getWidth()));
             srcX = std::min(srcX, image->getWidth() - 1);
             std::size_t srcY = roundToInt((((double)i) / ((double)newHeight)) * ((double)image->getHeight()));
@@ -85,7 +95,8 @@ void ImageEditor::resize(Image *image, int widthInput, int heightInput, bool per
         }
     }
 
-    image->endDimensionEditing(newWidth, newHeight);
+    //end editing
+    image->endDimensionEditing();
 }
 
 void assignNewValues(Rgb value, Rgb &destValue, Rgb &errorValue)
@@ -131,18 +142,19 @@ void ImageEditor::errorDiffusion(Image *image)
 
     for (std::size_t y = 0; y < image->getHeight(); y++)
     {
+        //set error to zero
         Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < image->getWidth(); x++)
         {
+            //get value of pixel
             curValue = image->getPixelRgb(x, y);
 
+            //calculate value after pusing the error
             pixel = curValue + error;
-            //assignNewValues(pixel.red, curValue.red, error.red);
-            //assignNewValues(pixel.green, curValue.green, error.green);
-            //assignNewValues(pixel.blue, curValue.blue, error.blue);
             assignNewValues(pixel, curValue, error);
 
+            //set pixel value
             image->setPixel(x, y, curValue);
         }
     }
@@ -153,20 +165,25 @@ void ImageEditor::twoDimErrorDiffusion(Image *image)
     Rgb curValue;
     Rgb pixel;
 
+    //hold previous row errors
     Rgb *rowError = new Rgb[image->getWidth()];
+
     for (std::size_t y = 0; y < image->getHeight(); y++)
     {
+        //set error to zero
         Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < image->getWidth(); x++)
         {
+            //get value of pixel
             curValue = image->getPixelRgb(x, y);
 
+            //calculate value after pusing the error
             pixel = curValue + error + rowError[x] / 2;
+            assignNewValues(pixel, curValue, error);//first for default error
+            assignNewValues(pixel, curValue, rowError[x]);//second for row error
 
-            assignNewValues(pixel, curValue, error);
-            assignNewValues(pixel, curValue, rowError[x]);
-
+            //set pixel value
             image->setPixel(x, y, curValue);
         }
     }
@@ -180,19 +197,18 @@ void ImageEditor::floydDithering(Image *image)
 
     for (std::size_t y = 0; y < image->getHeight(); y++)
     {
+        //set error to zero
         Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < image->getWidth(); x++)
         {
             curValue = image->getPixelRgb(x, y);
-
             assignNewValues(curValue, curValue, error);
-
             image->setPixel(x, y, curValue);
 
             Rgb neighbour;
 
-            //spread error
+            //push error
             try
             {
                 neighbour = image->getPixelRgb(x, y + 1);
@@ -246,17 +262,18 @@ void ImageEditor::jarvisDithering(Image *image)
 
     for (std::size_t y = 0; y < image->getHeight(); y++)
     {
+        //set error to zero
         Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < image->getWidth(); x++)
         {
             curValue = image->getPixelRgb(x, y);
             assignNewValues(curValue, curValue, error);
-
             image->setPixel(x, y, curValue);
 
             Rgb neighbour;
 
+            //push error
             try
             {
                 neighbour = image->getPixelRgb(x + 1, y);
@@ -398,6 +415,7 @@ void ImageEditor::stuckiDithering(Image *image)
 
     for (std::size_t y = 0; y < image->getHeight(); y++)
     {
+        //set error to zero
         Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < image->getWidth(); x++)
@@ -408,6 +426,7 @@ void ImageEditor::stuckiDithering(Image *image)
 
             Rgb neighbour;
 
+            //push error
             try
             {
                 neighbour = image->getPixelRgb(x + 1, y);
@@ -549,17 +568,18 @@ void ImageEditor::atkinsonDithering(Image *image)
 
     for (std::size_t y = 0; y < image->getHeight(); y++)
     {
+        //set error to zero
         Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < image->getWidth(); x++)
         {
             curValue = image->getPixelRgb(x, y);
             assignNewValues(curValue, curValue, error);
-
             image->setPixel(x, y, curValue);
 
             Rgb neighbour;
 
+            //push error
             try
             {
                 neighbour = image->getPixelRgb(x + 1, y);
@@ -635,17 +655,18 @@ void ImageEditor::burkesDithering(Image *image)
 
     for (std::size_t y = 0; y < image->getHeight(); y++)
     {
+        //set error to zero
         Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < image->getWidth(); x++)
         {
             curValue = image->getPixelRgb(x, y);
             assignNewValues(curValue, curValue, error);
-
             image->setPixel(x, y, curValue);
 
             Rgb neighbour;
 
+            //push error
             try
             {
                 neighbour = image->getPixelRgb(x + 1, y);
@@ -732,17 +753,18 @@ void ImageEditor::sierraDithering(Image *image)
 
     for (std::size_t y = 0; y < image->getHeight(); y++)
     {
+        //set error to zero
         Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < image->getWidth(); x++)
         {
             curValue = image->getPixelRgb(x, y);
             assignNewValues(curValue, curValue, error);
-
             image->setPixel(x, y, curValue);
 
             Rgb neighbour;
 
+            //push error
             try
             {
                 neighbour = image->getPixelRgb(x + 1, y);
@@ -862,17 +884,18 @@ void ImageEditor::twoRowSierra(Image *image)
 
     for (std::size_t y = 0; y < image->getHeight(); y++)
     {
+        //set error to zero
         Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < image->getWidth(); x++)
         {
             curValue = image->getPixelRgb(x, y);
             assignNewValues(curValue, curValue, error);
-
             image->setPixel(x, y, curValue);
 
             Rgb neighbour;
 
+            //push error
             try
             {
                 neighbour = image->getPixelRgb(x + 1, y);
@@ -959,17 +982,18 @@ void ImageEditor::sierraLite(Image *image)
 
     for (std::size_t y = 0; y < image->getHeight(); y++)
     {
+        //set error to zero
         Rgb error(0, 0, 0);
 
         for (std::size_t x = 0; x < image->getWidth(); x++)
         {
             curValue = image->getPixelRgb(x, y);
             assignNewValues(curValue, curValue, error);
-
             image->setPixel(x, y, curValue);
 
             Rgb neighbour;
 
+            //push error
             try
             {
                 neighbour = image->getPixelRgb(x + 1, y);
@@ -1008,11 +1032,13 @@ void ImageEditor::sierraLite(Image *image)
 
 double thresholdMap(std::size_t i, std::size_t j, int n)
 {
+    //calculate pixel using (NxN) treshold map
     return (double)(~(i << (i ^ j))) / (n * n);
 }
 
-void ImageEditor::orderedDithering(Image *image, int n)
+void ImageEditor::orderedDithering8x8(Image *image)
 {
+    int n = 8;
     Rgb curValue(0, 0, 0);
     Rgb newValue(0, 0, 0);
 
