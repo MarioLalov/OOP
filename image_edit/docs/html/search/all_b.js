@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['open_54',['open',['../class_commands.html#a0cd86cdc067b18e3d2a1fbe4ec5240ca',1,'Commands']]],
-  ['operator_2a_55',['operator*',['../struct_rgb.html#a3b6231c82fc924d21e207e0ad81aeb44',1,'Rgb']]],
-  ['operator_2b_56',['operator+',['../struct_rgb.html#a9b4e2e552858d13c8ee95fbfb91a3954',1,'Rgb']]],
-  ['operator_2f_57',['operator/',['../struct_rgb.html#a80650e832d8ed8692d62fa47a4bfd3fc',1,'Rgb']]],
-  ['operator_3d_58',['operator=',['../struct_rgb.html#ad3ed1b8f0cf4746b3c284f27c6dc5e21',1,'Rgb']]],
-  ['ordereddithering8x8_59',['orderedDithering8x8',['../class_image_editor.html#ac7c31876d63648bdddf3fa8c5479ade0',1,'ImageEditor']]]
+  ['open_55',['open',['../class_commands.html#a0cd86cdc067b18e3d2a1fbe4ec5240ca',1,'Commands']]],
+  ['operator_2a_56',['operator*',['../struct_rgb.html#a3b6231c82fc924d21e207e0ad81aeb44',1,'Rgb']]],
+  ['operator_2b_57',['operator+',['../struct_rgb.html#a9b4e2e552858d13c8ee95fbfb91a3954',1,'Rgb']]],
+  ['operator_2f_58',['operator/',['../struct_rgb.html#a80650e832d8ed8692d62fa47a4bfd3fc',1,'Rgb']]],
+  ['operator_3d_59',['operator=',['../struct_rgb.html#ad3ed1b8f0cf4746b3c284f27c6dc5e21',1,'Rgb']]],
+  ['ordereddithering8x8_60',['orderedDithering8x8',['../class_image_editor.html#ac7c31876d63648bdddf3fa8c5479ade0',1,'ImageEditor']]]
 ];

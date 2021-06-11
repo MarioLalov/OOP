@@ -106,7 +106,7 @@ int RgbToGrayscale(Rgb, int max_value);
 
 //binary files
 /*!
-*convert in to ASCII
+*convert int to ASCII
 *@param num number to be converted
 */
 std::string convertToASCII(int num);

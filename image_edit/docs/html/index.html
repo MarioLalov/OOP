@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Image Editing: Main</title>
+<title>Image Editing: Description</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -62,27 +62,52 @@ $(function() {
 
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Main </div>  </div>
+<div class="title">Description </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="Run"></a>
-commands</h1>
-<p><a class="el" href="class_image.html">Image</a> tests: g++ <a class="el" href="image_8cpp.html">Image/image.cpp</a> Tests/image_test.cpp</p>
-<p><a class="el" href="class_p_b_m.html">PBM</a> tests: g++ <a class="el" href="image_8cpp.html">Image/image.cpp</a> <a class="el" href="pbm_8cpp.html">PBM/pbm.cpp</a> Tests/pbm_test.cpp <a class="el" href="image__editor_8cpp.html">Editor/image_editor.cpp</a></p>
-<p><a class="el" href="class_p_g_m.html">PGM</a> tests: g++ <a class="el" href="image_8cpp.html">Image/image.cpp</a> <a class="el" href="pgm_8cpp.html">PGM/pgm.cpp</a> Tests/pgm_test.cpp <a class="el" href="image__editor_8cpp.html">Editor/image_editor.cpp</a></p>
-<p><a class="el" href="class_p_p_m.html">PPM</a> tests: g++ <a class="el" href="image_8cpp.html">Image/image.cpp</a> <a class="el" href="ppm_8cpp.html">PPM/ppm.cpp</a> Tests/ppm_test.cpp <a class="el" href="image__editor_8cpp.html">Editor/image_editor.cpp</a></p>
-<p>Full compilation: g++ <a class="el" href="image_8cpp.html">Image/image.cpp</a> <a class="el" href="pbm_8cpp.html">PBM/pbm.cpp</a> <a class="el" href="pgm_8cpp.html">PGM/pgm.cpp</a> <a class="el" href="ppm_8cpp.html">PPM/ppm.cpp</a> <a class="el" href="image__editor_8cpp.html">Editor/image_editor.cpp</a> <a class="el" href="main_8cpp.html">main.cpp</a> <a class="el" href="commands_8cpp.html">Commands/commands.cpp</a></p>
-<h1><a class="anchor" id="Program"></a>
-commands</h1>
-<p>open &lt;file_path&gt;</p>
-<p>new &lt;width&gt; &lt;height&gt; &lt;color&gt;</p>
-<p>close</p>
-<p>exit</p>
-<p>save</p>
-<p>saveas &lt;file_path&gt;</p>
-<p>crop &lt;upper_x&gt; &lt;upper_y&gt; &lt;lower_x&gt; &lt;lower_y&gt;</p>
-<p>resize &lt;width&gt; &lt;height&gt; || &lt;percentage&gt;</p>
-<p>dither </p>
+<div class="textblock"><h1><a class="anchor" id="Main"></a>
+Main</h1>
+<p>The user enters a command</p>
+<p>The command is then intepreted by the program which decides how to procced depending on the command</p>
+<p>Invalid commands or commands with invalid parameters are discarded</p>
+<p>The first command that the user must issue is OPEN</p>
+<p>If an image isn't loaded the programm will inform the user that they can't perform other operations</p>
+<p>After an image is loaded, the user can edit and save the edited image in the current or other file</p>
+<p>Before exiting or upon opening another image, the current image is automatically closed by the program</p>
+<p>The user can also use CLOSE to close the current image</p>
+<p>Closed images are treated as such and thus can't be edited</p>
+<p>Saving in different format is possible if the two formats are compatible</p>
+<h1><a class="anchor" id="abstract"></a>
+class Image</h1>
+<p>Class that holds all identical properities</p>
+<p>All editing functions work with pointers to <a class="el" href="class_image.html">Image</a> <br  />
+</p>
+<h1><a class="anchor" id="PBM"></a>
+PBM</h1>
+<p>Monochrome(0,1)</p>
+<p>In <a class="el" href="class_p_b_m.html">PBM</a> 0 == white and 1 == black in contrast to other formats</p>
+<p>Can be created from both P1 and P4 file formats</p>
+<p>Can also be created by the NEW command after setting the background color as a monchrome value (0 or 1)</p>
+<p>(example) new 100 100 1</p>
+<p>Can be saved to .pbm, .pgm and .ppm file (both raw and ASCII for .pgm and .ppm and only ASCII for .pbm)</p>
+<h1><a class="anchor" id="PGM"></a>
+PGM</h1>
+<p>Grayscale(0-255)</p>
+<p>Can be created from both P2 and P5 file formats</p>
+<p>Can also be created by the NEW command after setting the background color as a grayscale value (0,255)</p>
+<p>ex. new 100 100 15</p>
+<p>Can be saved to .pgm and .ppm file (both raw and ASCII)</p>
+<h1><a class="anchor" id="PPM"></a>
+PPM</h1>
+<p><a class="el" href="struct_rgb.html">Rgb</a>(0-255)</p>
+<p>Can be created from both P3 and P4 file formats</p>
+<p>Can also be created by the NEW command after setting the background color as an <a class="el" href="struct_rgb.html">Rgb</a> value</p>
+<p>ex. new 100 100 11 42 33</p>
+<p>Can be saved to .ppm file (both raw and ASCII)</p>
+<h1><a class="anchor" id="Image"></a>
+Editor</h1>
+<p>Works with pointers to abstract calss <a class="el" href="class_image.html">Image</a></p>
+<p>Implements crop, resize and all dithering algorithms </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->

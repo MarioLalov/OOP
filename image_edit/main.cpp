@@ -7,41 +7,82 @@
 #include "Editor/image_editor.h"
 #include "Commands/commands.h"
 
-/*! \mainpage Main
+/*! \mainpage Description
  *
- * \section Run commands
+ * \section Main
  *
- * Image tests: g++ Image/image.cpp Tests/image_test.cpp
+ * The user enters a command
  * 
- * PBM tests: g++ Image/image.cpp PBM/pbm.cpp Tests/pbm_test.cpp Editor/image_editor.cpp
+ * The command is then intepreted by the program which decides how to procced depending on the command
  * 
- * PGM tests: g++ Image/image.cpp PGM/pgm.cpp Tests/pgm_test.cpp Editor/image_editor.cpp
+ * Invalid commands or commands with invalid parameters are discarded
  * 
- * PPM tests: g++ Image/image.cpp PPM/ppm.cpp Tests/ppm_test.cpp Editor/image_editor.cpp
+ * The first command that the user must issue is OPEN
  * 
- * Full compilation: g++ Image/image.cpp PBM/pbm.cpp PGM/pgm.cpp PPM/ppm.cpp Editor/image_editor.cpp main.cpp Commands/commands.cpp
+ * If an image isn't loaded the programm will inform the user that they can't perform other operations
+ * 
+ * After an image is loaded, the user can edit and save the edited image in the current or other file
+ * 
+ * Before exiting or upon opening another image, the current image is automatically closed by the program
+ * 
+ * The user can also use CLOSE to close the current image
+ * 
+ * Closed images are treated as such and thus can't be edited
  *
- * \section Program commands
+ * Saving in different format is possible if the two formats are compatible
+ * 
+ * \section abstract class Image 
  *
- * open <file_path>
+ * Class that holds all identical properities 
  * 
- * new <width> <height> <color>
+ * All editing functions work with pointers to Image    
  * 
- * close
+ * \section PBM 
+ *
+ * Monochrome(0,1)
  * 
- * exit
+ * In PBM 0 == white and 1 == black in contrast to other formats
  * 
- * save
+ * Can be created from both P1 and P4 file formats
  * 
- * saveas <file_path>
+ * Can also be created by the NEW command after setting the background color as a monchrome value (0 or 1)
  * 
- * crop <upper_x> <upper_y> <lower_x> <lower_y>
+ * (example) new 100 100 1
  * 
- * resize <width> <height> || <percentage>
+ * Can be saved to .pbm, .pgm and .ppm file (both raw and ASCII for .pgm and .ppm and only ASCII for .pbm)
  * 
- * dither
+ * \section PGM 
+ *
+ * Grayscale(0-255)
  * 
+ * Can be created from both P2 and P5 file formats
+ * 
+ * Can also be created by the NEW command after setting the background color as a grayscale value (0,255)
+ * 
+ * ex. new 100 100 15
+ * 
+ * Can be saved to .pgm and .ppm file (both raw and ASCII)
+ *
+ * \section PPM 
+ *
+ * Rgb(0-255)
+ * 
+ * Can be created from both P3 and P4 file formats
+ * 
+ * Can also be created by the NEW command after setting the background color as an Rgb value 
+ * 
+ * ex. new 100 100 11 42 33 
+ * 
+ * Can be saved to .ppm file (both raw and ASCII)
+ *
+ * \section Image Editor
+ *
+ * Works with pointers to abstract calss Image
+ * 
+ * Implements crop, resize and all dithering algorithms
+ *
  */
+
 int main()
 {
     Image *image = nullptr;

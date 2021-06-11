@@ -26,7 +26,7 @@ public:
     static ditheringAlg dithering[11];
 
     /*!
-    *interpret command and call the apropriate function
+    *interpret command and call the appropriate function
     *@param[in, out] image image to work with
     *@param[in] command command from input
     *@param[in, out] end set to true when exit command is initiated
@@ -85,5 +85,6 @@ public:
 //helpers
 std::size_t getDitheringIndex();
 void toUpper(std::string &input); //make whole string to upper
+void printHelpMenu();
 
 #endif

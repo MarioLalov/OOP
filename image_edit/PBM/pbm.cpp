@@ -218,7 +218,6 @@ void PBM::writeTextPixel(std::size_t x, std::size_t y, std::ofstream &file, std:
     else if (extension == "ppm")
     {
         Rgb value = getPixelRgb(x, y);
-
         file << value.red << " " << value.green << " " << value.blue << std::endl;
     }
 }

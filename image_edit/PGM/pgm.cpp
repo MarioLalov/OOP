@@ -292,7 +292,6 @@ void PGM::writeBinaryPixel(std::size_t x, std::size_t y, std::ofstream &file, st
     {
         int value;
         value = getPixelGrayscale(x, y);
-
         writeGrayscalePixelBinary(value, file);
     }
     else if (extension == "ppm")

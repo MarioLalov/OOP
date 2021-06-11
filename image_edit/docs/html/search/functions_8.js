@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['jarvisdithering_152',['jarvisDithering',['../class_image_editor.html#a982d6958a06d1ac02016b4583db1d604',1,'ImageEditor']]]
+  ['jarvisdithering_154',['jarvisDithering',['../class_image_editor.html#a982d6958a06d1ac02016b4583db1d604',1,'ImageEditor']]]
 ];

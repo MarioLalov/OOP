@@ -19,6 +19,7 @@ public:
     *@param[in] percentage if true interpret widthInpt and heightInput as percentage
     */
     static void resize(Image *image, int widthInput, int heightInput, bool percentage);
+    
     //dithering algorithms
     /*!
     *dither image
@@ -78,6 +79,14 @@ public:
 };
 
 //helpers
+/*!
+*calculate values for destination value and the error value when dithering
+*/
+void assignNewValues(Rgb value, Rgb &destValue, Rgb &errorValue);
+/*!
+*helper for assignNewValues()
+*/
+void assignIntValues(int &value, int &destValue, int& errorValue);
 /*!
 *calculate pixel using (NxN) treshold map
 */

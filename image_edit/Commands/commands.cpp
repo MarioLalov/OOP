@@ -9,52 +9,6 @@ ditheringAlg Commands::dithering[11] = {ImageEditor::errorDiffusion, ImageEditor
 
 std::string Commands::curFilePath;
 
-void toUpper(std::string &input) //make whole string to upper
-{
-    for (std::size_t i = 0; i < input.length(); i++)
-    {
-        input[i] = std::toupper(input[i]);
-    }
-}
-
-std::size_t getDitheringIndex()
-{
-    //print dithering menu
-    std::cout << "Please enter the index of the dithering algorithm you'd like to use: " << std::endl;
-    std::cout << "---------------------------------------------------------------------" << std::endl;
-    std::cout << "(1) Error Diffusion Dithering " << std::endl;
-    std::cout << "(2) Two-Dimensional Error Diffusion Dithering " << std::endl;
-    std::cout << "(3) Floyd-Steinberg Dithering " << std::endl;
-    std::cout << "(4) Jarvis, Judice, and Ninke Dithering " << std::endl;
-    std::cout << "(5) Stucki Dithering " << std::endl;
-    std::cout << "(6) Atkinson Dithering " << std::endl;
-    std::cout << "(7) Burkes Dithering " << std::endl;
-    std::cout << "(8) Sierra Dithering " << std::endl;
-    std::cout << "(9) Two-Row Sierra Diffusion Dithering " << std::endl;
-    std::cout << "(10) Sierra Dithering " << std::endl;
-    std::cout << "(11) Ordered Dithering with 8x8 Bayer matrix " << std::endl;
-
-    //get dithering algorithm index
-    std::string s_index;
-    std::size_t index;
-    do
-    {
-        std::cout << "Enter dithering index: ";
-        std::getline(std::cin, s_index);
-
-        try
-        {
-            index = std::stoi(s_index);
-        }
-        catch(const std::invalid_argument err)
-        {
-            std::cout << "Please enter a number" << std::endl;
-        }
-    } while (index > 11 || index == 0);
-
-    return index - 1;
-}
-
 void Commands::open(std::string file_path, Image *&image)
 {
     //if another image is open colse it
@@ -62,6 +16,8 @@ void Commands::open(std::string file_path, Image *&image)
     {
         deleteImage(image);
     }
+
+    std::cout << "Opening..." << std::endl;
 
     //set current file path
     curFilePath = file_path;
@@ -98,6 +54,11 @@ void Commands::open(std::string file_path, Image *&image)
 
 void Commands::deleteImage(Image *&image)
 {
+    if (image == nullptr)
+    {
+        throw std::logic_error("Cannot close - no document loaded");
+    }
+
     //delte image and mark as deleted
     delete image;
     image = nullptr;
@@ -116,6 +77,8 @@ void Commands::save(Image *&image)
         throw std::logic_error("Cannot save - no document loaded");
     }
 
+    std::cout << "Saving..." << std::endl;
+
     //get extension of current file and save
     std::string extension = curFilePath.substr(curFilePath.find_last_of(".") + 1);
     image->write(curFilePath, extension);
@@ -126,10 +89,12 @@ void Commands::save(Image *&image)
 void Commands::saveas(std::string file_path, Image *&image)
 {
     //check if an image is loaded
-    if (curFilePath.empty() || image == nullptr)
+    if (image == nullptr)
     {
         throw std::logic_error("Cannot save - no document loaded");
     }
+
+    std::cout << "Saving..." << std::endl;
 
     //get extension and save if formats are compatible
     std::string extension = file_path.substr(file_path.find_last_of(".") + 1);
@@ -141,7 +106,7 @@ void Commands::saveas(std::string file_path, Image *&image)
 void Commands::dither(Image *&image)
 {
     //check if an image is loaded
-    if (curFilePath.empty() || image == nullptr)
+    if (image == nullptr)
     {
         throw std::logic_error("Cannot edit - no document loaded");
     }
@@ -154,6 +119,11 @@ void Commands::dither(Image *&image)
 
 void Commands::crop(Image *&image, std::vector<std::string> &params)
 {
+    if (curFilePath.empty() || image == nullptr)
+    {
+        throw std::logic_error("Cannot edit - no document loaded");
+    }
+
     int upper_x, upper_y, lower_x, lower_y;
 
     //get crop parameters and validate
@@ -181,6 +151,11 @@ void Commands::crop(Image *&image, std::vector<std::string> &params)
 
 void Commands::resize(Image *&image, std::vector<std::string> &params)
 {
+    if (curFilePath.empty() || image == nullptr)
+    {
+        throw std::logic_error("Cannot edit - no document loaded");
+    }
+
     int new_width, new_height;
 
     //check if it's percentage resize or pixel resize
@@ -200,7 +175,7 @@ void Commands::resize(Image *&image, std::vector<std::string> &params)
         //call resize for percentage
         ImageEditor::resize(image, percentage, percentage, true);
     }
-    else
+    else if(params.size() == 2)
     {
         try
         {
@@ -214,6 +189,10 @@ void Commands::resize(Image *&image, std::vector<std::string> &params)
 
         //call resize for pixels
         ImageEditor::resize(image, new_width, new_height, false);
+    }
+    else
+    {
+        throw std::invalid_argument("Invalid parameters resize");
     }
 
     std::cout << "Resizing successful" << std::endl;
@@ -403,8 +382,74 @@ void Commands::initiateCommand(std::string fullCommand, Image *&image, bool& end
         exit(image);
         end = true;
     }
+    else if(command == "HELP" && params.size() == 0)
+    {
+        printHelpMenu();
+    }
     else
     {
         throw std::invalid_argument("Unknown command: " + command);
     }
+}
+
+void toUpper(std::string &input) //make whole string to upper
+{
+    for (std::size_t i = 0; i < input.length(); i++)
+    {
+        input[i] = std::toupper(input[i]);
+    }
+}
+
+std::size_t getDitheringIndex()
+{
+    //print dithering menu
+    std::cout << "Please enter the index of the dithering algorithm you'd like to use: " << std::endl;
+    std::cout << "---------------------------------------------------------------------" << std::endl;
+    std::cout << "(1) Error Diffusion Dithering " << std::endl;
+    std::cout << "(2) Two-Dimensional Error Diffusion Dithering " << std::endl;
+    std::cout << "(3) Floyd-Steinberg Dithering " << std::endl;
+    std::cout << "(4) Jarvis, Judice, and Ninke Dithering " << std::endl;
+    std::cout << "(5) Stucki Dithering " << std::endl;
+    std::cout << "(6) Atkinson Dithering " << std::endl;
+    std::cout << "(7) Burkes Dithering " << std::endl;
+    std::cout << "(8) Sierra Dithering " << std::endl;
+    std::cout << "(9) Two-Row Sierra Diffusion Dithering " << std::endl;
+    std::cout << "(10) Sierra Dithering " << std::endl;
+    std::cout << "(11) Ordered Dithering with 8x8 Bayer matrix " << std::endl;
+
+    //get dithering algorithm index
+    std::string s_index;
+    std::size_t index;
+    do
+    {
+        std::cout << "Enter dithering index: ";
+        std::getline(std::cin, s_index);
+
+        try
+        {
+            index = std::stoi(s_index);
+        }
+        catch(const std::invalid_argument err)
+        {
+            std::cout << "Please enter a number" << std::endl;
+        }
+    } while (index > 11 || index == 0);
+
+    return index - 1;
+}
+
+void printHelpMenu()
+{
+    std::cout << "Possible commands:" << std::endl;
+    std::cout << "---------------------------------------------------------------------" << std::endl;
+    std::cout << "Create new image: NEW <width> <height> <color>" << std::endl;
+    std::cout << "Open existing image: OPEN <file path>" << std::endl;
+    std::cout << "Save changes to current image: SAVE" << std::endl;
+    std::cout << "Save new copy of current image: SAVEAS <file path>" << std::endl;
+    std::cout << "Crop image: CROP <upper x> <upper y> <lower x> <lower y>" << std::endl;
+    std::cout << "Resize image: RESIZE <new width> <new height> or RESIZE <new size in percentage>" << std::endl;
+    std::cout << "Dither current image: Dither" << std::endl;
+    std::cout << "Close current image: CLOSE" << std::endl;
+    std::cout << "Exit program: EXIT" << std::endl;
+    std::cout << "---------------------------------------------------------------------" << std::endl;
 }

@@ -99,42 +99,6 @@ void ImageEditor::resize(Image *image, int widthInput, int heightInput, bool per
     image->endDimensionEditing();
 }
 
-void assignNewValues(Rgb value, Rgb &destValue, Rgb &errorValue)
-{
-    if ((255 - value.red) > value.red)
-    {
-        errorValue.red = value.red;
-        destValue.red = 0;
-    }
-    else
-    {
-        errorValue.red = value.red - 255;
-        destValue.red = 255;
-    }
-
-    if ((255 - value.green) > value.green)
-    {
-        errorValue.green = value.green;
-        destValue.green = 0;
-    }
-    else
-    {
-        errorValue.green = value.green - 255;
-        destValue.green = 255;
-    }
-
-    if ((255 - value.blue) > value.blue)
-    {
-        errorValue.blue = value.blue;
-        destValue.blue = 0;
-    }
-    else
-    {
-        errorValue.blue = value.blue - 255;
-        destValue.blue = 255;
-    }
-}
-
 void ImageEditor::errorDiffusion(Image *image)
 {
     Rgb curValue;
@@ -1055,4 +1019,58 @@ void ImageEditor::orderedDithering8x8(Image *image)
             image->setPixel(x, y, newValue);
         }
     }
+}
+
+void assignIntValues(int &value, int &destValue, int& errorValue)
+{
+    if ((255 - value) > value)
+    {
+        errorValue = value;
+        destValue = 0;
+    }
+    else
+    {
+        errorValue = value - 255;
+        destValue = 255;
+    }
+
+}
+
+void assignNewValues(Rgb value, Rgb &destValue, Rgb &errorValue)
+{
+    assignIntValues(value.red, destValue.red, errorValue.red);
+    assignIntValues(value.green, destValue.green, errorValue.green);
+    assignIntValues(value.blue, destValue.blue, errorValue.blue);
+    /*if ((255 - value.red) > value.red)
+    {
+        errorValue.red = value.red;
+        destValue.red = 0;
+    }
+    else
+    {
+        errorValue.red = value.red - 255;
+        destValue.red = 255;
+    }
+
+    if ((255 - value.green) > value.green)
+    {
+        errorValue.green = value.green;
+        destValue.green = 0;
+    }
+    else
+    {
+        errorValue.green = value.green - 255;
+        destValue.green = 255;
+    }
+
+    if ((255 - value.blue) > value.blue)
+    {
+        errorValue.blue = value.blue;
+        destValue.blue = 0;
+    }
+    else
+    {
+        errorValue.blue = value.blue - 255;
+        destValue.blue = 255;
+    }*/
 }

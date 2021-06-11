@@ -2,6 +2,8 @@
 #include <limits>
 #include <algorithm>
 
+//Rgb
+
 Rgb::Rgb()
 {
     red = 0;
@@ -90,52 +92,7 @@ Rgb Rgb::operator/(int const &num)
     return result;
 }
 
-//pack grayscale in Rgb value
-Rgb grayscaleToRgb(int value, int max_value)
-{
-    Rgb Rgb_value;
-    int to255 = value * (255 / max_value);
-    Rgb_value.red = to255;
-    Rgb_value.green = to255;
-    Rgb_value.blue = to255;
-
-    return Rgb_value;
-}
-
-//transfer grayscale value in Rgb to grayscale in int
-int RgbToGrayscale(Rgb Rgb_value, int max_value)
-{
-    int grayscale = (Rgb_value.green * max_value) / 255;
-
-    return grayscale;
-}
-
-bool getSaveFormat()
-{
-    std::string input;
-    int n;
-
-    std::cout << "How do you want to save the image? " << std::endl
-              << "(1)ASCII" << std::endl
-              << "(2)Raw" << std::endl;
-
-    while (n != 1 && n != 2)
-    {
-        std::cout << "Enter index: ";
-        std::getline(std::cin, input);
-
-        try
-        {
-            n = std::stoi(input);
-        }
-        catch (const std::invalid_argument &err)
-        {
-            std::cout << "Please enter a valid index" << std::endl;
-        }
-    }
-
-    return n - 1;
-}
+//Image
 
 void Image::write(std::string output_location, std::string extension)
 {
@@ -183,6 +140,8 @@ std::size_t Image::getHeight() const
     return height;
 }
 
+//helpers
+
 void checkForComments(std::ifstream &file)
 {
     //get current position
@@ -211,6 +170,53 @@ void checkForComments(std::ifstream &file)
 int roundToInt(double num)
 {
     return (int)(num + 0.5);
+}
+
+bool getSaveFormat()
+{
+    std::string input;
+    int n;
+
+    std::cout << "How do you want to save the image? " << std::endl
+              << "(1)ASCII" << std::endl
+              << "(2)Raw" << std::endl;
+
+    while (n != 1 && n != 2)
+    {
+        std::cout << "Enter index: ";
+        std::getline(std::cin, input);
+
+        try
+        {
+            n = std::stoi(input);
+        }
+        catch (const std::invalid_argument &err)
+        {
+            std::cout << "Please enter a valid index" << std::endl;
+        }
+    }
+
+    return n - 1;
+}
+
+//pack grayscale in Rgb value
+Rgb grayscaleToRgb(int value, int max_value)
+{
+    Rgb Rgb_value;
+    int to255 = value * (255 / max_value);
+    Rgb_value.red = to255;
+    Rgb_value.green = to255;
+    Rgb_value.blue = to255;
+
+    return Rgb_value;
+}
+
+//transfer grayscale value in Rgb to grayscale in int
+int RgbToGrayscale(Rgb Rgb_value, int max_value)
+{
+    int grayscale = (Rgb_value.green * max_value) / 255;
+
+    return grayscale;
 }
 
 std::string convertToASCII(int num)
@@ -248,7 +254,7 @@ void writeNumberBinary(std::string number, std::ofstream &file)
 
 void writeRgbPixelBinary(Rgb color, std::ofstream &file)
 {
-    //write each value in ASCII
+    //write each value in ASCII  
     file.write((char *)&color.red, 1);
     file.write((char *)&color.green, 1);
     file.write((char *)&color.blue, 1);
@@ -315,19 +321,19 @@ Rgb getRgbBinary(std::ifstream &file)
     file.read((char *)&buffer, 1);
     if (file)
     {
-        value.red = buffer;
+        value.red = (int) buffer;
     }
 
     file.read((char *)&buffer, 1);
     if (file)
     {
-        value.green = buffer;
+        value.green = (int) buffer;
     }
 
     file.read((char *)&buffer, 1);
     if (file)
     {
-        value.blue = buffer;
+        value.blue = (int) buffer;
     }
 
     return value;
