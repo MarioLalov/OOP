@@ -119,7 +119,7 @@ TEST_CASE("crop")
     std::string format;
     file >> format;
 
-    PPM *pic = new PPM(format, file);
+    Image *pic = new PPM(format, file);
 
     SECTION("angel of picture crop")
     {
@@ -175,7 +175,7 @@ TEST_CASE("resize")
     std::string format;
     file >> format;
 
-    PPM *pic = new PPM(format, file);
+    Image *pic = new PPM(format, file);
 
     SECTION("pixel resize")
     {

@@ -1,7 +1,7 @@
 #include "pbm.h"
 #include <iostream>
 
-void PBM::deleteArr(int **arr, std::size_t curHeight)
+void PBM::deleteArr(bool **arr, std::size_t curHeight)
 {
     //delete everything that was successfully allocated
     if (arr != nullptr)
@@ -18,14 +18,14 @@ void PBM::deleteArr(int **arr, std::size_t curHeight)
     }
 }
 
-int **PBM::allocateNew(std::size_t curWidth, std::size_t curHeight)
+bool **PBM::allocateNew(std::size_t curWidth, std::size_t curHeight)
 {
     //allocate and if an error occurs delete the allocated memory
-    int **pic = nullptr;
+    bool **pic = nullptr;
 
     try
     {
-        pic = new int *[curHeight];
+        pic = new bool *[curHeight];
 
         for (int i = 0; i < curHeight; i++)
         {
@@ -34,7 +34,7 @@ int **PBM::allocateNew(std::size_t curWidth, std::size_t curHeight)
 
         for (int i = 0; i < curHeight; i++)
         {
-            pic[i] = new int[curWidth];
+            pic[i] = new bool[curWidth];
         }
 
         return pic;
@@ -91,7 +91,7 @@ PBM::PBM(std::string in_format, std::ifstream &file)
     (format == "P1") ? readText(file) : readBinary(file);
 }
 
-int PBM::flipPixel(std::size_t x, std::size_t y) const
+bool PBM::flipPixel(std::size_t x, std::size_t y) const
 {
     return !picture[y][x];
 }
@@ -115,52 +115,13 @@ int PBM::getPixelGrayscale(std::size_t x, std::size_t y) const
         throw std::out_of_range("Out of range!");
     }
 
-    //return pixe in grayscale
+    //return pixel in grayscale
     return flipPixel(x, y);
 }
 
 void PBM::setPixel(std::size_t x, std::size_t y, Rgb value)
 {
     picture[y][x] = RgbToGrayscale(value, 1);
-}
-
-void PBM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
-{
-    //check if edinting has started
-    if (editingPicture)
-    {
-        throw std::logic_error("Operation already started!");
-    }
-
-    //create editing picture
-    editingPicture = allocateNew(new_width, new_height);
-
-    //assign new picture dimensions
-    editingWidth = new_width;
-    editingHeight = new_height;
-}
-
-void PBM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY)
-{
-    editingPicture[destY][destX] = picture[srcY][srcX];
-}
-
-void PBM::endDimensionEditing()
-{
-    //check if process is started
-    if (!editingPicture)
-    {
-        throw std::logic_error("Operation is not started!");
-    }
-
-    //delete old picture and assign new one
-    deleteArr(picture, height);
-    picture = editingPicture;
-    editingPicture = nullptr;
-
-    //assign new dimensions
-    width = editingWidth;
-    height = editingHeight;
 }
 
 void PBM::validateFormat(std::string extension)
@@ -288,14 +249,16 @@ void PBM::readText(std::ifstream &file)
     picture = allocateNew(width, height);
 
     //assign pixel values and check for potential errors
+    int cur;
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
         {
-            file >> picture[i][j];
+            //file >> picture[i][j];
+            file >> cur;
             checkForComments(file);
 
-            if (picture[i][j] != 1 && picture[i][j] != 0)
+            if (cur != 1 && cur != 0)
             {
                 //if pixel is invalid delete picture and mark as deleted
                 deleteArr(picture, height);
@@ -303,6 +266,8 @@ void PBM::readText(std::ifstream &file)
 
                 throw std::invalid_argument("Invalid pixel value!");
             }
+
+            picture[i][j] = cur;
         }
     }
 }
@@ -341,9 +306,9 @@ void PBM::readBinary(std::ifstream &file)
             for (int k = 7; k >= 0; k--)
             {
                 int thebit = (value >> k) & 1;
-                picture[i][j] = thebit;
+                //picture[i][j] = thebit;
 
-                if (picture[i][j] != 1 && picture[i][j] != 0)
+                if (thebit != 1 && thebit != 0)
                 {
                     //if pixel is invalid delete picture and mark as deleted
                     deleteArr(picture, height);
@@ -351,6 +316,8 @@ void PBM::readBinary(std::ifstream &file)
 
                     throw std::invalid_argument("Invalid pixel value!");
                 }
+
+                picture[i][j] = thebit;
 
                 j++;
                 if (j >= width)

@@ -15,7 +15,7 @@ TEST_CASE("regular ASCII files")
 
     REQUIRE(pic.getWidth() == 6);
     REQUIRE(pic.getHeight() == 10);
-    REQUIRE(!pic.getPixelGrayscale(2, 1) == 1);
+    REQUIRE(pic.getPixelGrayscale(2, 1) == 0);
 }
 
 TEST_CASE("ASCII files with comments")
@@ -28,7 +28,7 @@ TEST_CASE("ASCII files with comments")
 
     REQUIRE(pic.getWidth() == 6);
     REQUIRE(pic.getHeight() == 10);
-    REQUIRE(!pic.getPixelGrayscale(2, 1) == 1);
+    REQUIRE(pic.getPixelGrayscale(2, 1) == 0);
 }
 
 TEST_CASE("binary files")
@@ -41,7 +41,7 @@ TEST_CASE("binary files")
 
     REQUIRE(pic.getWidth() == 6);
     REQUIRE(pic.getHeight() == 10);
-    REQUIRE(!pic.getPixelGrayscale(2, 1) == 1);
+    REQUIRE(pic.getPixelGrayscale(2, 1) == 0);
 }
 
 TEST_CASE("parametric constructor")
@@ -52,7 +52,7 @@ TEST_CASE("parametric constructor")
 
         REQUIRE(pic.getHeight() == 18);
         REQUIRE(pic.getWidth() == 15);
-        REQUIRE(!pic.getPixelGrayscale(3, 3) == 1);
+        REQUIRE(pic.getPixelGrayscale(3, 3) == 0);
     }
 
     SECTION("dimensions error")
@@ -93,7 +93,7 @@ TEST_CASE("crop")
     std::string format;
     file >> format;
 
-    PBM *pic = new PBM(format, file);
+    Image *pic = new PBM(format, file);
 
     SECTION("angel of picture crop")
     {
@@ -101,7 +101,7 @@ TEST_CASE("crop")
 
         REQUIRE(pic->getHeight() == 4);
         REQUIRE(pic->getWidth() == 3);
-        REQUIRE(!pic->getPixelGrayscale(1, 0) == 1);
+        REQUIRE(pic->getPixelGrayscale(1, 0) == 1);
     }
 
     SECTION("mid picture crop")
@@ -110,7 +110,7 @@ TEST_CASE("crop")
 
         REQUIRE(pic->getHeight() == 3);
         REQUIRE(pic->getWidth() == 3);
-        REQUIRE(!pic->getPixelGrayscale(1, 0) == 1);
+        REQUIRE(pic->getPixelGrayscale(1, 0) == 1);
     }
 
     SECTION("out of bound crop")
@@ -119,7 +119,7 @@ TEST_CASE("crop")
 
         REQUIRE(pic->getHeight() == 9);
         REQUIRE(pic->getWidth() == 5);
-        REQUIRE(!pic->getPixelGrayscale(1, 0) == 1);
+        REQUIRE(pic->getPixelGrayscale(1, 0) == 1);
     }
 
     SECTION("out of bound crop with x out of range parameter")
@@ -128,7 +128,7 @@ TEST_CASE("crop")
 
         REQUIRE(pic->getHeight() == 5);
         REQUIRE(pic->getWidth() == 5);
-        REQUIRE(!pic->getPixelGrayscale(1, 0) == 1);
+        REQUIRE(pic->getPixelGrayscale(1, 0) == 1);
     }
 
     SECTION("out of bound crop with y out of range parameter")
@@ -137,7 +137,7 @@ TEST_CASE("crop")
 
         REQUIRE(pic->getHeight() == 9);
         REQUIRE(pic->getWidth() == 3);
-        REQUIRE(!pic->getPixelGrayscale(1, 0) == 1);
+        REQUIRE(pic->getPixelGrayscale(1, 0) == 1);
     }
 
     delete pic;
@@ -149,7 +149,7 @@ TEST_CASE("resize")
     std::string format;
     file >> format;
 
-    PBM *pic = new PBM(format, file);
+    Image *pic = new PBM(format, file);
 
     SECTION("pixel resize")
     {

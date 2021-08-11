@@ -10,8 +10,6 @@ class PPM : public Image
 private:
     int maxRgbValue;
     Rgb **picture;
-    //! buffer
-    Rgb **editingPicture = nullptr;
 
     //memory management functions
     /*!
@@ -115,30 +113,6 @@ public:
     *@param[in] value Rgb value to be assigned
     */
     void setPixel(std::size_t x, std::size_t y, Rgb value);
-
-    //editing with changes in dimensions
-    /*!
-    *open buffer for editing
-    *
-    *throws if buufer is already being used
-    *@param[in] new_width width of new picture
-    *@param[in] new_height height of new picture
-    */
-    void startDimensionEditing(std::size_t new_width, std::size_t new_height);
-    /*!
-    *copy from original picture to buffer
-    *@param[in] srcX x coordiante of source pixel
-    *@param[in] srcY y coordinate of source pixel
-    *@param[in] destX x coordiante of destination pixel
-    *@param[in] destY y coordinate of destination pixel
-    */
-    void copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY);
-    /*!
-    *close buffer and copy to original picture
-    *
-    *throws if buffer is already set to nullptr
-    */
-    void endDimensionEditing();
 
     /*!
     *erase picture

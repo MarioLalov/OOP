@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
 
 #ifndef IMAGE_H
 #define IMAGE_H
@@ -22,6 +23,11 @@ struct Rgb
     *sets values to coresponding input
     */
     Rgb(int in_red, int in_green, int in_blue);
+    /*!
+    *parametric construtor
+    *sets values from hex
+    */
+    Rgb(std::string &hex);
 
     //operators
     /*!
@@ -49,28 +55,23 @@ protected:
     std::size_t width;
     std::size_t height;
 
-    //buffer dimensions
-    //! buffer width
-    std::size_t editingWidth;
-    //! buffer height  
-    std::size_t editingHeight;
-
     //output in file virtuals
     virtual void validateFormat(std::string extension) = 0;
     virtual void writePixel(std::size_t x, std::size_t y, std::ofstream &file, std::string extension, bool binary) = 0;
     virtual void writeFormatInfo(std::ofstream &file, std::string extension, bool binary) = 0;
 
 public:
+    //factory
+    static Image *createImageByColor(int in_width, int in_height, std::string color);
+    static Image *createImageByFormat(std::string format, int in_width, int in_height);
+
     //getters
+    std::string getFormat() const;
     std::size_t getWidth() const;
     std::size_t getHeight() const;
 
-    //editing with changes in dimensions virtuals
-    virtual void startDimensionEditing(std::size_t width, std::size_t height) = 0;
-    virtual void copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY) = 0;
-    virtual void endDimensionEditing() = 0;
-
     //virtual pixel getters
+    virtual int getPixelGrayscale(std::size_t x, std::size_t y) const = 0;
     virtual Rgb getPixelRgb(std::size_t x, std::size_t y) const = 0;
     virtual void setPixel(std::size_t x, std::size_t y, Rgb value) = 0;
 

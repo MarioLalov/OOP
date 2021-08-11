@@ -120,45 +120,6 @@ void PGM::setPixel(std::size_t x, std::size_t y, Rgb value)
     picture[y][x] = RgbToGrayscale(value, maxGrayscaleValue);
 }
 
-void PGM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
-{
-    //check if edinting has started
-    if (editingPicture)
-    {
-        throw std::logic_error("Operation already started!");
-    }
-
-    //create editing picture
-    editingPicture = allocateNew(new_width, new_height);
-
-    //assign new picture dimensions
-    editingWidth = new_width;
-    editingHeight = new_height;
-}
-
-void PGM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY)
-{
-    editingPicture[destY][destX] = picture[srcY][srcX];
-}
-
-void PGM::endDimensionEditing()
-{
-    //check if process is started
-    if (!editingPicture)
-    {
-        throw std::logic_error("Operation is not started!");
-    }
-
-    //delete old picture and assign new one
-    deleteArr(picture, height);
-    picture = editingPicture;
-    editingPicture = nullptr;
-
-    //assign new dimensions
-    width = editingWidth;
-    height = editingHeight;
-}
-
 void PGM::validateFormat(std::string extension)
 {
     if (extension != "pgm" && extension != "ppm")
@@ -305,7 +266,7 @@ void PGM::readBinary(std::ifstream &file)
 {
     int in_width, in_height;
 
-    file.get();
+    //file.get();
     checkForCommentsBinary(file);
     in_width = getNumberBinary(file);
     checkForCommentsBinary(file);
@@ -332,7 +293,7 @@ void PGM::readBinary(std::ifstream &file)
     picture = allocateNew(width, height);
 
     //assign pixel values
-    file.get();
+    //file.get();
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
@@ -348,6 +309,8 @@ void PGM::readBinary(std::ifstream &file)
                 throw std::invalid_argument("Invalid pixel value!");
             }
         }
+
+        std::cout << std::endl;
     }
 }
 

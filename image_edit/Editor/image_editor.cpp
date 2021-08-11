@@ -1,6 +1,6 @@
 #include "image_editor.h"
 
-void ImageEditor::crop(Image *image, std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)
+void ImageEditor::crop(Image *&image, std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y)
 {
     //validate input
     if (upper_x > lower_x || upper_y > lower_y)
@@ -54,22 +54,22 @@ void ImageEditor::crop(Image *image, std::size_t upper_x, std::size_t upper_y, s
     std::size_t newHeight = (lower_y - upper_y + 1);
 
     //start editing
-    image->startDimensionEditing(newWidth, newHeight);
+    Image *newImg = Image::createImageByFormat(image->getFormat(), newWidth, newHeight);
 
     //copy values to cropped
     for (int i = upper_y, k = 0; i <= lower_y; i++, k++)
     {
         for (int j = upper_x, l = 0; j <= lower_x; j++, l++)
         {
-            image->copyToEditing(j, i, l, k);
+            newImg->setPixel(l, k, image->getPixelRgb(j, i));
         }
     }
 
-    //end editing
-    image->endDimensionEditing();
+    delete image;
+    image = newImg;
 }
 
-void ImageEditor::resize(Image *image, int widthInput, int heightInput, bool percentage)
+void ImageEditor::resize(Image *&image, int widthInput, int heightInput, bool percentage)
 {
     //get new dimensions
     std::size_t newWidth;
@@ -78,7 +78,7 @@ void ImageEditor::resize(Image *image, int widthInput, int heightInput, bool per
     newHeight = (percentage) ? roundToInt(((double)heightInput / 100) * ((double)image->getHeight())) : heightInput;
 
     //start editing
-    image->startDimensionEditing(newWidth, newHeight);
+    Image *newImg = Image::createImageByFormat(image->getFormat(), newWidth, newHeight);
 
     //assign pixel values to resized picture
     for (int i = 0; i < newHeight; i++)
@@ -91,12 +91,12 @@ void ImageEditor::resize(Image *image, int widthInput, int heightInput, bool per
             std::size_t srcY = roundToInt((((double)i) / ((double)newHeight)) * ((double)image->getHeight()));
             srcY = std::min(srcY, image->getHeight() - 1);
 
-            image->copyToEditing(srcX, srcY, j, i);
+            newImg->setPixel(j, i, image->getPixelRgb(srcX, srcY));
         }
     }
 
-    //end editing
-    image->endDimensionEditing();
+    delete image;
+    image = newImg;
 }
 
 void ImageEditor::errorDiffusion(Image *image)
@@ -144,8 +144,8 @@ void ImageEditor::twoDimErrorDiffusion(Image *image)
 
             //calculate value after pusing the error
             pixel = curValue + error + rowError[x] / 2;
-            assignNewValues(pixel, curValue, error);//first for default error
-            assignNewValues(pixel, curValue, rowError[x]);//second for row error
+            assignNewValues(pixel, curValue, error);       //first for default error
+            assignNewValues(pixel, curValue, rowError[x]); //second for row error
 
             //set pixel value
             image->setPixel(x, y, curValue);
@@ -1021,7 +1021,7 @@ void ImageEditor::orderedDithering8x8(Image *image)
     }
 }
 
-void assignIntValues(int &value, int &destValue, int& errorValue)
+void assignIntValues(int &value, int &destValue, int &errorValue)
 {
     if ((255 - value) > value)
     {
@@ -1033,7 +1033,6 @@ void assignIntValues(int &value, int &destValue, int& errorValue)
         errorValue = value - 255;
         destValue = 255;
     }
-
 }
 
 void assignNewValues(Rgb value, Rgb &destValue, Rgb &errorValue)

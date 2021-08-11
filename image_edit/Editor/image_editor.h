@@ -10,7 +10,7 @@ public:
     *crop image
     *@param[in, out] image image to be cropped
     */
-    static void crop(Image *image, std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y);
+    static void crop(Image *&image, std::size_t upper_x, std::size_t upper_y, std::size_t lower_x, std::size_t lower_y);
     /*!
     *resize image
     *@param[in, out] image image to be resized
@@ -18,7 +18,7 @@ public:
     *@param[in] heightInput height after resize
     *@param[in] percentage if true interpret widthInpt and heightInput as percentage
     */
-    static void resize(Image *image, int widthInput, int heightInput, bool percentage);
+    static void resize(Image *&image, int widthInput, int heightInput, bool percentage);
     
     //dithering algorithms
     /*!

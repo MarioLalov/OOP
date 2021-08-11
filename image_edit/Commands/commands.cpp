@@ -175,7 +175,7 @@ void Commands::resize(Image *&image, std::vector<std::string> &params)
         //call resize for percentage
         ImageEditor::resize(image, percentage, percentage, true);
     }
-    else if(params.size() == 2)
+    else if (params.size() == 2)
     {
         try
         {
@@ -225,64 +225,17 @@ void Commands::createNew(Image *&image, std::vector<std::string> &params)
         throw std::invalid_argument("Invalid parameters for new");
     }
 
-    if (params.size() == 5)
-    {
-        Rgb color;
+    image = Image::createImageByColor(width, height, params[2]);
 
-        try
-        {
-            color = Rgb(std::stoi(params[2]), std::stoi(params[3]), std::stoi(params[4]));
-        }
-        catch (const std::invalid_argument &err)
-        {
-            throw std::invalid_argument("Invalid parameters for new");
-        }
-
-        if (color.red < 0 || color.red > 255 || color.green < 0 || color.green > 255 || color.blue < 0 || color.blue > 255)
-        {
-            throw std::invalid_argument("Invalid parameters for new");
-        }
-
-        image = new PPM("P3", width, height, color);
-
-        colorValue = "(" + params[2] + ", " + params[3] + ", " + params[4] + ")";
-    }
-    else
-    {
-        int color;
-
-        try
-        {
-            color = std::stoi(params[2]);
-        }
-        catch (const std::invalid_argument &err)
-        {
-            throw std::invalid_argument("Invalid parameters for new");
-        }
-
-        if (color == 1 || color == 0)
-        {
-            image = new PBM("P1", width, height, color);
-        }
-        else if (color >= 0 && color <= 255)
-        {
-            image = new PGM("P2", width, height, color);
-        }
-        else
-        {
-            throw std::invalid_argument("Invalid parameters for new");
-        }
-
-        colorValue = params[2];
-    }
-
-    std::cout << "Created new document with size " << width << "x" << height << " and filled with " << colorValue << std::endl;
+    std::cout << "Created new document with size " << width << "x" << height 
+              << ", format " << image->getFormat()
+              << " and filled with " << params[2] << std::endl;
 }
 
 void Commands::exit(Image *&image)
 {
     //close image before exiting
-    if(image != nullptr)
+    if (image != nullptr)
     {
         deleteImage(image);
     }
@@ -290,7 +243,7 @@ void Commands::exit(Image *&image)
     std::cout << "Exiting..." << std::endl;
 }
 
-void Commands::initiateCommand(std::string fullCommand, Image *&image, bool& end)
+void Commands::initiateCommand(std::string fullCommand, Image *&image, bool &end)
 {
     std::string command;
     std::string param;
@@ -377,12 +330,12 @@ void Commands::initiateCommand(std::string fullCommand, Image *&image, bool& end
     {
         resize(image, params);
     }
-    else if(command == "EXIT" && params.size() == 0)
+    else if (command == "EXIT" && params.size() == 0)
     {
         exit(image);
         end = true;
     }
-    else if(command == "HELP" && params.size() == 0)
+    else if (command == "HELP" && params.size() == 0)
     {
         printHelpMenu();
     }
@@ -429,7 +382,7 @@ std::size_t getDitheringIndex()
         {
             index = std::stoi(s_index);
         }
-        catch(const std::invalid_argument err)
+        catch (const std::invalid_argument err)
         {
             std::cout << "Please enter a number" << std::endl;
         }

@@ -5,15 +5,13 @@
 class PBM : public Image
 {
 private:
-    int **picture;
-    //! buffer
-    int **editingPicture = nullptr;
-
+    bool **picture;
+    
     //needed because with PBM monochrome values are flipped
     /*!
     *flip pixel value because in pbm the black and white are reversed
     */
-    int flipPixel(std::size_t x, std::size_t y) const;
+    bool flipPixel(std::size_t x, std::size_t y) const;
 
     //memory management functions
     /*!
@@ -21,12 +19,12 @@ private:
     *@param[in] curWidth width of array
     *@param[in] curHeight height of array
     */
-    int **allocateNew(std::size_t widht, std::size_t height);
+    bool **allocateNew(std::size_t width, std::size_t height);
     /*!
     *memory deletion
     *@param[in] curHeight height of array
     */
-    void deleteArr(int **arr, std::size_t curHeight);
+    void deleteArr(bool **arr, std::size_t curHeight);
 
     //output in file functions
     /*!
@@ -121,30 +119,6 @@ public:
     *@param[in] value Rgb value to be assigned that is transformed to monochrome before setting
     */
     void setPixel(std::size_t x, std::size_t y, Rgb value);
-
-    //editing with changes in dimensions
-    /*!
-    *open buffer for editing
-    *
-    *throws if buufer is already being used
-    *@param[in] new_width width of new picture
-    *@param[in] new_height height of new picture
-    */
-    void startDimensionEditing(std::size_t new_width, std::size_t new_height);
-    /*!
-    *copy from original picture to buffer
-    *@param[in] srcX x coordiante of source pixel
-    *@param[in] srcY y coordinate of source pixel
-    *@param[in] destX x coordiante of destination pixel
-    *@param[in] destY y coordinate of destination pixel
-    */
-    void copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY);
-    /*!
-    *close buffer and copy to original picture
-    *
-    *throws if buffer is already set to nullptr
-    */
-    void endDimensionEditing();
 
     /*!
     *erase picture

@@ -1,4 +1,7 @@
 #include "image.h"
+#include "../PBM/pbm.h"
+#include "../PGM/pgm.h"
+#include "../PPM/ppm.h"
 #include <limits>
 #include <algorithm>
 
@@ -16,6 +19,28 @@ Rgb::Rgb(int in_red, int in_green, int in_blue)
     red = in_red;
     green = in_green;
     blue = in_blue;
+}
+
+Rgb::Rgb(std::string &hex)
+{
+    std::string current;
+    int num;
+
+    std::stringstream ss;
+
+    current = hex.substr(0, 2);
+    ss << std::hex << current;
+    ss >> red;
+
+    ss.clear();
+    current = hex.substr(2, 2);
+    ss << std::hex << current;
+    ss >> green;
+
+    ss.clear();
+    current = hex.substr(4, 2);
+    ss << std::hex << current;
+    ss >> blue;
 }
 
 Rgb &Rgb::operator=(const Rgb &other)
@@ -94,6 +119,55 @@ Rgb Rgb::operator/(int const &num)
 
 //Image
 
+Image *Image::createImageByColor(int in_width, int in_height, std::string in_color)
+{
+    Image *newImg;
+    Rgb color(in_color);
+
+    if (color.red == color.green && color.green == color.blue)
+    {
+        if (color.red == 255)
+        {
+            newImg = new PBM("P1", in_width, in_height, 0);
+        }
+        else if (color.red == 0)
+        {
+            newImg = new PBM("P1", in_width, in_height, 1);
+        }
+        else
+        {
+            newImg = new PGM("P2", in_width, in_height, color.red);
+        }
+    }
+    else
+    {
+        newImg = new PPM("P3", in_width, in_height, color);
+    }
+
+    return newImg;
+}
+
+Image *Image::createImageByFormat(std::string format, int in_width, int in_height)
+{
+    Image *newImg;
+
+    if (format == "P1" || format == "P4")
+    {
+        newImg = new PBM("P1", in_width, in_height, 0);
+    }
+    else if (format == "P2" || format == "P5")
+    {
+        newImg = new PGM("P2", in_width, in_height, 0);
+    }
+    else if (format == "P3" || format == "P6")
+    {
+        Rgb color(0, 0, 0);
+        newImg = new PPM("P3", in_width, in_height, color);
+    }
+
+    return newImg;
+}
+
 void Image::write(std::string output_location, std::string extension)
 {
     //check if formats are compatible
@@ -103,7 +177,7 @@ void Image::write(std::string output_location, std::string extension)
     bool binary = getSaveFormat();
 
     //check if save is possible
-    if(binary && extension == "pbm")
+    if (binary && extension == "pbm")
     {
         std::cout << "Raw format not supported for PBM. Saving in ASCII instead." << std::endl;
         binary = false;
@@ -128,6 +202,11 @@ void Image::write(std::string output_location, std::string extension)
     }
 
     ofile.close();
+}
+
+std::string Image::getFormat() const
+{
+    return format;
 }
 
 std::size_t Image::getWidth() const
@@ -254,7 +333,7 @@ void writeNumberBinary(std::string number, std::ofstream &file)
 
 void writeRgbPixelBinary(Rgb color, std::ofstream &file)
 {
-    //write each value in ASCII  
+    //write each value in ASCII
     file.write((char *)&color.red, 1);
     file.write((char *)&color.green, 1);
     file.write((char *)&color.blue, 1);
@@ -267,8 +346,13 @@ void writeGrayscalePixelBinary(int color, std::ofstream &file)
 
 void checkForCommentsBinary(std::ifstream &file)
 {
+    if (file.peek() == '\n' || file.peek() == ' ')
+    {
+        file.get();
+    }
+
     //check if next chracter is #
-    int character = file.peek();
+    char character = file.peek();
 
     //ignore everything till the end of the comment
     if (character == '#')
@@ -282,17 +366,22 @@ void checkForCommentsBinary(std::ifstream &file)
 
 int getNumberBinary(std::ifstream &file)
 {
-    //get each digitn in ASCII then transform to int
+    //get each digit in ASCII then transform to int
     std::string number;
     char current;
 
-    file.get();
+    if (file.peek() == '\n' || file.peek() == ' ')
+    {
+        file.get();
+    }
 
     while (file.peek() != ' ' && file.peek() != '\n')
     {
         current = file.get();
         number += current;
     }
+
+    std::cout << number << std::endl;
 
     return std::stoi(number);
 }
@@ -321,19 +410,19 @@ Rgb getRgbBinary(std::ifstream &file)
     file.read((char *)&buffer, 1);
     if (file)
     {
-        value.red = (int) buffer;
+        value.red = (int)buffer;
     }
 
     file.read((char *)&buffer, 1);
     if (file)
     {
-        value.green = (int) buffer;
+        value.green = (int)buffer;
     }
 
     file.read((char *)&buffer, 1);
     if (file)
     {
-        value.blue = (int) buffer;
+        value.blue = (int)buffer;
     }
 
     return value;

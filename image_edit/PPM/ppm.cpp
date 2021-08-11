@@ -122,45 +122,6 @@ void PPM::setPixel(std::size_t x, std::size_t y, Rgb value)
     picture[y][x] = value;
 }
 
-void PPM::startDimensionEditing(std::size_t new_width, std::size_t new_height)
-{
-    //check if edinting has started
-    if (editingPicture)
-    {
-        throw std::logic_error("Operation already started!");
-    }
-
-    //create editing picture
-    editingPicture = allocateNew(new_width, new_height);
-
-    //assign new picture dimensions
-    editingWidth = new_width;
-    editingHeight = new_height;
-}
-
-void PPM::copyToEditing(std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY)
-{
-    editingPicture[destY][destX] = picture[srcY][srcX];
-}
-
-void PPM::endDimensionEditing()
-{
-    //check if process is started
-    if (!editingPicture)
-    {
-        throw std::logic_error("Operation is not started!");
-    }
-
-    //delete old picture and assign new one
-    deleteArr(picture, height);
-    picture = editingPicture;
-    editingPicture = nullptr;
-
-    //assign new dimensions
-    width = editingWidth;
-    height = editingHeight;
-}
-
 void PPM::validateFormat(std::string extension)
 {
     if (extension != "ppm")
@@ -267,7 +228,6 @@ void PPM::readBinary(std::ifstream &file)
 {
     int in_width, in_height;
 
-    file.get();
     checkForCommentsBinary(file);
     in_width = getNumberBinary(file);
     checkForCommentsBinary(file);
