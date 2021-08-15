@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['format_202',['format',['../class_image.html#a9808a8b4b6d9b563f01c87b5946475d2',1,'Image']]]
+  ['green_199',['green',['../struct_rgb.html#a8c6f263db117f731cd7d15b45dbca855',1,'Rgb']]]
 ];

@@ -62,7 +62,19 @@ protected:
 
 public:
     //factory
+    /*!
+    *factory method for image with background color
+    *@param[in] in_width width of image to be created
+    *@param[in] in_height height of image to be created
+    *@param[in] color color in hex
+    */
     static Image *createImageByColor(int in_width, int in_height, std::string color);
+    /*!
+    *factory method for image with format
+    *@param[in] format format of image to be created
+    *@param[in] in_width width of image to be created
+    *@param[in] in_height height of image to be created
+    */
     static Image *createImageByFormat(std::string format, int in_width, int in_height);
 
     //getters

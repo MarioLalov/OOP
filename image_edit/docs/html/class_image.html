@@ -63,6 +63,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="class_image-members.html">List of all members</a>  </div>
@@ -86,22 +87,27 @@ Inheritance diagram for Image:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a421e1d3be2053271b7170eeb2121381e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a421e1d3be2053271b7170eeb2121381e">getFormat</a> () const</td></tr>
+<tr class="separator:a421e1d3be2053271b7170eeb2121381e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a813bd3d8d9157c68ed32d3d36d9d01ca"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a813bd3d8d9157c68ed32d3d36d9d01ca">getWidth</a> () const</td></tr>
 <tr class="separator:a813bd3d8d9157c68ed32d3d36d9d01ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78dcb333d968dc3dfc1b0c70f83177ba"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a78dcb333d968dc3dfc1b0c70f83177ba">getHeight</a> () const</td></tr>
 <tr class="separator:a78dcb333d968dc3dfc1b0c70f83177ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56c8a29f4e1af115c7667481675a16fa"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a56c8a29f4e1af115c7667481675a16fa">startDimensionEditing</a> (std::size_t <a class="el" href="class_image.html#aba2c638967761e06a313658696543f08">width</a>, std::size_t <a class="el" href="class_image.html#abf7d8d59513c6295d6010f123334b8b9">height</a>)=0</td></tr>
-<tr class="separator:a56c8a29f4e1af115c7667481675a16fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1872784baff111b5bf2e84fb2954b5c4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a1872784baff111b5bf2e84fb2954b5c4">copyToEditing</a> (std::size_t srcX, std::size_t srcY, std::size_t destX, std::size_t destY)=0</td></tr>
-<tr class="separator:a1872784baff111b5bf2e84fb2954b5c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a2f1f9f881791fd55dfcc11b2417f0a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a6a2f1f9f881791fd55dfcc11b2417f0a">endDimensionEditing</a> ()=0</td></tr>
-<tr class="separator:a6a2f1f9f881791fd55dfcc11b2417f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34ad69d1b57290b1ef45b5b9ac1267d6"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a34ad69d1b57290b1ef45b5b9ac1267d6">getPixelGrayscale</a> (std::size_t x, std::size_t y) const =0</td></tr>
+<tr class="separator:a34ad69d1b57290b1ef45b5b9ac1267d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18376edb2f99d51b2b51927ca11b5efa"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="struct_rgb.html">Rgb</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a18376edb2f99d51b2b51927ca11b5efa">getPixelRgb</a> (std::size_t x, std::size_t y) const =0</td></tr>
 <tr class="separator:a18376edb2f99d51b2b51927ca11b5efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83b8a9a59862b53a78dcd9d78ae69b0d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a83b8a9a59862b53a78dcd9d78ae69b0d">setPixel</a> (std::size_t x, std::size_t y, <a class="el" href="struct_rgb.html">Rgb</a> value)=0</td></tr>
 <tr class="separator:a83b8a9a59862b53a78dcd9d78ae69b0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab42e480eff2fba57cedc798b39ca5bd9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#ab42e480eff2fba57cedc798b39ca5bd9">write</a> (std::string output_location, std::string extension)</td></tr>
 <tr class="separator:ab42e480eff2fba57cedc798b39ca5bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a16cb1c8a87b18b70c371179da60a3acb"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_image.html">Image</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a16cb1c8a87b18b70c371179da60a3acb">createImageByColor</a> (int in_width, int in_height, std::string color)</td></tr>
+<tr class="separator:a16cb1c8a87b18b70c371179da60a3acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfe0c878a0af2bacd80c76090b9cc84d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_image.html">Image</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#acfe0c878a0af2bacd80c76090b9cc84d">createImageByFormat</a> (std::string <a class="el" href="class_image.html#a9808a8b4b6d9b563f01c87b5946475d2">format</a>, int in_width, int in_height)</td></tr>
+<tr class="separator:acfe0c878a0af2bacd80c76090b9cc84d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -120,17 +126,10 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:aba2c638967761e06a313658696543f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf7d8d59513c6295d6010f123334b8b9"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#abf7d8d59513c6295d6010f123334b8b9">height</a></td></tr>
 <tr class="separator:abf7d8d59513c6295d6010f123334b8b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5c5f6d25a832d30c559607f58c3aa16"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#af5c5f6d25a832d30c559607f58c3aa16">editingWidth</a></td></tr>
-<tr class="memdesc:af5c5f6d25a832d30c559607f58c3aa16"><td class="mdescLeft">&#160;</td><td class="mdescRight">buffer width  <a href="class_image.html#af5c5f6d25a832d30c559607f58c3aa16">More...</a><br /></td></tr>
-<tr class="separator:af5c5f6d25a832d30c559607f58c3aa16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8bfa7ddc7aca4e544682da2ae1204353"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_image.html#a8bfa7ddc7aca4e544682da2ae1204353">editingHeight</a></td></tr>
-<tr class="memdesc:a8bfa7ddc7aca4e544682da2ae1204353"><td class="mdescLeft">&#160;</td><td class="mdescRight">buffer height <br  />
-  <a href="class_image.html#a8bfa7ddc7aca4e544682da2ae1204353">More...</a><br /></td></tr>
-<tr class="separator:a8bfa7ddc7aca4e544682da2ae1204353"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a1872784baff111b5bf2e84fb2954b5c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1872784baff111b5bf2e84fb2954b5c4">&#9670;&nbsp;</a></span>copyToEditing()</h2>
+<a id="a16cb1c8a87b18b70c371179da60a3acb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16cb1c8a87b18b70c371179da60a3acb">&#9670;&nbsp;</a></span>createImageByColor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -139,28 +138,22 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Image::copyToEditing </td>
+          <td class="memname"><a class="el" href="class_image.html">Image</a> * Image::createImageByColor </td>
           <td>(</td>
-          <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>srcX</em>, </td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>in_width</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>srcY</em>, </td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>in_height</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>destX</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>destY</em>&#160;</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>color</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -170,17 +163,23 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Implemented in <a class="el" href="class_p_p_m.html#a8683225c6c54f5cd1e405b4bead2097f">PPM</a>, <a class="el" href="class_p_g_m.html#ae14c2ddca77e110d94a258ee082697b4">PGM</a>, and <a class="el" href="class_p_b_m.html#ae2e72ca81f39f394af69c3ce22b071a6">PBM</a>.</p>
+<p>factory method for image with background color </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">in_width</td><td>width of image to be created </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">in_height</td><td>height of image to be created </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">color</td><td>color in hex </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a id="a6a2f1f9f881791fd55dfcc11b2417f0a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a2f1f9f881791fd55dfcc11b2417f0a">&#9670;&nbsp;</a></span>endDimensionEditing()</h2>
+<a id="acfe0c878a0af2bacd80c76090b9cc84d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe0c878a0af2bacd80c76090b9cc84d">&#9670;&nbsp;</a></span>createImageByFormat()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -189,20 +188,60 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Image::endDimensionEditing </td>
+          <td class="memname"><a class="el" href="class_image.html">Image</a> * Image::createImageByFormat </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>in_width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>in_height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>factory method for image with format </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">format</td><td>format of image to be created </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">in_width</td><td>width of image to be created </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">in_height</td><td>height of image to be created </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Implemented in <a class="el" href="class_p_p_m.html#a1a0538bcc392170157f62144adab16ec">PPM</a>, <a class="el" href="class_p_g_m.html#add9f31d6a5d464a69a9d68f60471db7e">PGM</a>, and <a class="el" href="class_p_b_m.html#abf72f6bcc0ad12b1fb633cb1da9f56d7">PBM</a>.</p>
+</div>
+</div>
+<a id="a421e1d3be2053271b7170eeb2121381e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a421e1d3be2053271b7170eeb2121381e">&#9670;&nbsp;</a></span>getFormat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Image::getFormat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -220,6 +259,44 @@ Protected Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a34ad69d1b57290b1ef45b5b9ac1267d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34ad69d1b57290b1ef45b5b9ac1267d6">&#9670;&nbsp;</a></span>getPixelGrayscale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int Image::getPixelGrayscale </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="class_p_p_m.html#a4137fc627edff7a1ad874b188490898f">PPM</a>, <a class="el" href="class_p_g_m.html#a7d562a21db810db54b0a120845be660d">PGM</a>, and <a class="el" href="class_p_b_m.html#a4fa6f1704ac79460072dd45903369c44">PBM</a>.</p>
 
 </div>
 </div>
@@ -319,44 +396,6 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="class_p_p_m.html#a445eaec916e81d1ce837b5f9eec63065">PPM</a>, <a class="el" href="class_p_g_m.html#a6e124793a6645b078a05686a037924f3">PGM</a>, and <a class="el" href="class_p_b_m.html#a685901fbb7477233822fdbf0d7762ef0">PBM</a>.</p>
-
-</div>
-</div>
-<a id="a56c8a29f4e1af115c7667481675a16fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a56c8a29f4e1af115c7667481675a16fa">&#9670;&nbsp;</a></span>startDimensionEditing()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void Image::startDimensionEditing </td>
-          <td>(</td>
-          <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>width</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>height</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implemented in <a class="el" href="class_p_p_m.html#abe8c2a75dde612d6e14723bd943004ad">PPM</a>, <a class="el" href="class_p_g_m.html#ada8d520101da2bd2567371f7681698bc">PGM</a>, and <a class="el" href="class_p_b_m.html#a7b62294a5273a7268ecd0791f4f3f237">PBM</a>.</p>
 
 </div>
 </div>
@@ -525,55 +564,6 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a8bfa7ddc7aca4e544682da2ae1204353"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8bfa7ddc7aca4e544682da2ae1204353">&#9670;&nbsp;</a></span>editingHeight</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::size_t Image::editingHeight</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>buffer height <br  />
- </p>
-
-</div>
-</div>
-<a id="af5c5f6d25a832d30c559607f58c3aa16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af5c5f6d25a832d30c559607f58c3aa16">&#9670;&nbsp;</a></span>editingWidth</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::size_t Image::editingWidth</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>buffer width </p>
-
-</div>
-</div>
 <a id="a9808a8b4b6d9b563f01c87b5946475d2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9808a8b4b6d9b563f01c87b5946475d2">&#9670;&nbsp;</a></span>format</h2>
 

@@ -381,8 +381,6 @@ int getNumberBinary(std::ifstream &file)
         number += current;
     }
 
-    std::cout << number << std::endl;
-
     return std::stoi(number);
 }
 

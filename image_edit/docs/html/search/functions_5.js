@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['flippixel_141',['flipPixel',['../class_p_b_m.html#a7c15d46c0f2ed9a6ccead483045d595f',1,'PBM']]],
-  ['floyddithering_142',['floydDithering',['../class_image_editor.html#a67a56d62f322b10e65b9f78235c90268',1,'ImageEditor']]]
+  ['flippixel_139',['flipPixel',['../class_p_b_m.html#ad2660acd69b31636ec1138d51d0557ff',1,'PBM']]],
+  ['floyddithering_140',['floydDithering',['../class_image_editor.html#a67a56d62f322b10e65b9f78235c90268',1,'ImageEditor']]]
 ];
